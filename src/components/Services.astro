@@ -1,0 +1,85 @@
+---
+const services = [
+  {
+    title: 'Expert Video Training',
+    description: 'Hours of hands-on video content built from real production environments. Each module includes working SQL scripts, AWR reports, and live walkthroughs.',
+    features: ['RAC & ASM Architecture', 'Exadata & ODA Operations', 'Performance & AWR Tuning', 'Patch Lifecycle Management'],
+    cta: 'Explore Videos',
+    href: '/#trainings',
+    icon: 'M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z',
+    accent: 'bg-brand-50 border-brand-200',
+    iconBg: 'bg-brand-100',
+    iconColor: 'text-brand-700',
+  },
+  {
+    title: 'Knowledge Library',
+    description: 'Deep technical articles drawn from 14 years of field experience. No filler — just architecture patterns, tuning playbooks, and recovery strategies that work.',
+    features: ['RAC vs Restart Patterns', 'Backup & Data Guard', 'Patching Strategies', 'Exadata Lifecycle'],
+    cta: 'Browse Articles',
+    href: '/#blog',
+    icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25',
+    accent: 'bg-slate-50 border-slate-200',
+    iconBg: 'bg-slate-100',
+    iconColor: 'text-slate-700',
+  },
+  {
+    title: 'Community',
+    description: 'Join a network of Oracle DBAs asking real questions and sharing real solutions. Get feedback on your AWR reports, discuss upgrade paths, and stay sharp.',
+    features: ['Peer Q&A Forums', 'AWR Report Reviews', 'Upgrade Path Discussions', 'Career Guidance'],
+    cta: 'Join Community',
+    href: '/#community',
+    icon: 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z',
+    accent: 'bg-emerald-50 border-emerald-200',
+    iconBg: 'bg-emerald-100',
+    iconColor: 'text-emerald-700',
+  },
+];
+---
+
+<section id="trainings" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Section header -->
+    <div class="text-center max-w-2xl mx-auto mb-14">
+      <span class="inline-block text-xs font-semibold text-brand-700 uppercase tracking-widest mb-3">What We Offer</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Everything a serious DBA needs</h2>
+      <p class="mt-4 text-lg text-slate-600">From raw video to community support — all built on real Oracle production experience.</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid md:grid-cols-3 gap-6">
+      {services.map((svc) => (
+        <div class={`rounded-2xl border p-7 flex flex-col ${svc.accent} hover:shadow-lg transition-shadow duration-300`}>
+          <!-- Icon -->
+          <div class={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${svc.iconBg}`}>
+            <svg class={`w-6 h-6 ${svc.iconColor}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d={svc.icon} />
+            </svg>
+          </div>
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-slate-900 mb-2">{svc.title}</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-5">{svc.description}</p>
+          <!-- Features list -->
+          <ul class="space-y-2 mb-7 flex-1">
+            {svc.features.map(f => (
+              <li class="flex items-center gap-2 text-sm text-slate-700">
+                <svg class="w-4 h-4 text-brand-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                </svg>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <!-- CTA -->
+          <a href={svc.href} class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-900 transition-colors group">
+            {svc.cta}
+            <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>

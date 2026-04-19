@@ -1,0 +1,49 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Confirming your account… — AkinsMedia">
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-700 rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-slate-600 text-sm font-medium">Confirming your account…</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Supabase email confirmation redirects here with tokens in the URL hash
+  // e.g. /auth/callback#access_token=xxx&refresh_token=xxx&type=signup
+  async function handleCallback() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+
+    const accessToken  = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+    const errorDesc    = params.get('error_description');
+
+    if (errorDesc) {
+      window.location.href = '/login?error=' + encodeURIComponent(errorDesc);
+      return;
+    }
+
+    if (!accessToken || !refreshToken) {
+      window.location.href = '/login?error=' + encodeURIComponent('Confirmation link is invalid or expired.');
+      return;
+    }
+
+    const res = await fetch('/api/auth/set-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+    });
+
+    if (res.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      window.location.href = '/login?error=' + encodeURIComponent('Could not confirm account. Please try again.');
+    }
+  }
+
+  handleCallback();
+</script>

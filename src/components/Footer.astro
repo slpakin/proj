@@ -1,0 +1,77 @@
+---
+const links = {
+  'Training': [
+    { label: 'Video Trainings', href: '/#trainings' },
+    { label: 'Oracle 23AI Series', href: '/#trainings' },
+    { label: 'Performance Tuning', href: '/#trainings' },
+    { label: 'RAC & ASM', href: '/#trainings' },
+    { label: 'Exadata & ODA', href: '/#trainings' },
+  ],
+  'Resources': [
+    { label: 'Blog Articles', href: '/#blog' },
+    { label: 'AWR Guides', href: '/#blog' },
+    { label: 'Patch Lifecycle', href: '/#blog' },
+    { label: 'Recovery Runbooks', href: '/#blog' },
+  ],
+  'Company': [
+    { label: 'Community', href: '/#community' },
+    { label: 'Contact', href: '/#contact' },
+    { label: 'Log In', href: '/login' },
+    { label: 'Get Started', href: '/signup' },
+  ],
+};
+---
+
+<footer id="contact" class="bg-slate-900 text-slate-400">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+
+    <!-- Top: logo + links -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+
+      <!-- Brand column -->
+      <div class="sm:col-span-2 lg:col-span-1">
+        <a href="/" class="inline-flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+            </svg>
+          </div>
+          <span class="font-bold text-white tracking-tight">AkinsMedia</span>
+        </a>
+        <p class="text-sm leading-relaxed max-w-xs">
+          Production-proven Oracle DBA training for professionals who need results, not theory.
+        </p>
+        <p class="mt-4 text-sm">
+          <a href="mailto:admin@akinsmedia.com" class="text-brand-400 hover:text-brand-300 transition-colors">
+            admin@akinsmedia.com
+          </a>
+        </p>
+      </div>
+
+      <!-- Link columns -->
+      {Object.entries(links).map(([section, items]) => (
+        <div>
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">{section}</h4>
+          <ul class="space-y-2.5">
+            {items.map(item => (
+              <li>
+                <a href={item.href} class="text-sm hover:text-slate-200 transition-colors">{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <p>&copy; 2014 – {new Date().getFullYear()} AkinsMedia. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-slate-200 transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-slate-200 transition-colors">Terms of Use</a>
+      </div>
+    </div>
+
+  </div>
+</footer>

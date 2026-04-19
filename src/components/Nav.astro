@@ -1,0 +1,87 @@
+---
+interface Props {
+  user?: { email?: string } | null;
+}
+const { user } = Astro.props;
+---
+
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 group">
+      <div class="w-8 h-8 bg-brand-900 rounded-lg flex items-center justify-center">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+        </svg>
+      </div>
+      <span class="font-bold text-lg text-brand-900 tracking-tight group-hover:text-brand-700 transition-colors">
+        AkinsMedia
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-1">
+      <a href="/#trainings"  class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-700 rounded-md hover:bg-slate-50 transition-colors">Trainings</a>
+      <a href="/#blog"       class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-700 rounded-md hover:bg-slate-50 transition-colors">Blog</a>
+      <a href="/#community"  class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-700 rounded-md hover:bg-slate-50 transition-colors">Community</a>
+      <a href="/#contact"    class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-700 rounded-md hover:bg-slate-50 transition-colors">Contact</a>
+    </div>
+
+    <!-- Desktop CTA -->
+    <div class="hidden md:flex items-center gap-2">
+      {user ? (
+        <a href="/dashboard" class="px-4 py-2 text-sm font-semibold text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors">
+          Dashboard
+        </a>
+      ) : (
+        <>
+          <a href="/login" class="px-4 py-2 text-sm font-semibold text-brand-700 border border-brand-200 rounded-lg hover:bg-brand-50 transition-colors">
+            Log in
+          </a>
+          <a href="/signup" class="px-4 py-2 text-sm font-semibold text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition-colors shadow-sm">
+            Get Started
+          </a>
+        </>
+      )}
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button id="menu-btn" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Toggle menu">
+      <svg id="menu-icon-open"  class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-4 space-y-1">
+    <a href="/#trainings" class="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md">Trainings</a>
+    <a href="/#blog"      class="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md">Blog</a>
+    <a href="/#community" class="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md">Community</a>
+    <a href="/#contact"   class="block px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-md">Contact</a>
+    <div class="pt-2 border-t border-slate-100 flex gap-2">
+      {user ? (
+        <a href="/dashboard" class="flex-1 text-center px-4 py-2 text-sm font-semibold text-brand-700 border border-brand-200 rounded-lg">Dashboard</a>
+      ) : (
+        <>
+          <a href="/login"  class="flex-1 text-center px-4 py-2 text-sm font-semibold text-brand-700 border border-brand-200 rounded-lg">Log in</a>
+          <a href="/signup" class="flex-1 text-center px-4 py-2 text-sm font-semibold text-white bg-brand-700 rounded-lg">Get Started</a>
+        </>
+      )}
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn       = document.getElementById('menu-btn')!;
+  const menu      = document.getElementById('mobile-menu')!;
+  const iconOpen  = document.getElementById('menu-icon-open')!;
+  const iconClose = document.getElementById('menu-icon-close')!;
+
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('hidden');
+    iconOpen.classList.toggle('hidden', !open);
+    iconClose.classList.toggle('hidden', open);
+  });
+</script>
