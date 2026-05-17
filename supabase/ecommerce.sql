@@ -77,6 +77,18 @@ create table if not exists public.reviews (
 );
 
 -- ─────────────────────────────────────────────
+-- Grants  (anon + authenticated need explicit SELECT)
+-- ─────────────────────────────────────────────
+grant usage on schema public to anon, authenticated;
+grant select on public.products    to anon, authenticated;
+grant select on public.reviews     to anon, authenticated;
+grant select on public.orders      to authenticated;
+grant select on public.order_items to authenticated;
+grant insert on public.orders      to authenticated;
+grant insert on public.order_items to authenticated;
+grant insert on public.reviews     to authenticated;
+
+-- ─────────────────────────────────────────────
 -- RLS  (drop first so re-runs are idempotent)
 -- ─────────────────────────────────────────────
 alter table public.products    enable row level security;
