@@ -1,42 +1,42 @@
 ---
 const reviews = [
   {
-    name: 'Maria L.',
-    location: 'Austin, TX',
+    name: 'Amara O.',
+    location: 'London, UK',
     rating: 5,
-    title: 'Life-changing for meal prep!',
-    body: "I prep meals on Sundays and this vacuum sealer has completely changed the game. My veggies stay crisp all week and meat lasts 3× longer in the freezer. The one-button design is so easy — I've even got my kids using it.",
-    avatar: 'M',
+    title: 'The smartest kitchen purchase I have made',
+    body: "I batch-cook every weekend and the Chef Preserve has genuinely cut my food waste in half. Asparagus, soft cheese, leftover stew — everything keeps far longer. The one-button seal is brilliant. My whole family uses it now.",
+    avatar: 'A',
     color: 'indigo',
     verified: true,
   },
   {
-    name: 'James R.',
-    location: 'Chicago, IL',
+    name: 'Kenji M.',
+    location: 'Tokyo, Japan',
     rating: 5,
-    title: 'Worth every penny',
-    body: "I was skeptical at first but this thing really works. I sealed a batch of salmon and it was perfectly fresh 12 days later in the fridge. The compact size is great — it sits on my counter without eating up space.",
-    avatar: 'J',
+    title: 'Exceptional build quality, zero compromise',
+    body: "I compared four vacuum sealers before choosing this. The motor is whisper-quiet — under 55 dB, exactly as advertised. Sealed fresh tuna and it was still sashimi-grade after 11 days refrigerated. Outstanding.",
+    avatar: 'K',
     color: 'green',
     verified: true,
   },
   {
-    name: 'Sarah K.',
-    location: 'Portland, OR',
+    name: 'Sofia B.',
+    location: 'São Paulo, Brazil',
     rating: 5,
-    title: 'Quiet and incredibly easy to clean',
-    body: "My old sealer was LOUD. This one is practically silent. The drip tray pops right out, goes in the dishwasher, and we're done. I use it every other day. Highly recommend the bundle — the bags are high quality too.",
+    title: 'Saves money every single week',
+    body: "Supermarket trips used to go bad so fast in the heat here. Since getting the Chef Preserve, I buy in bulk and nothing spoils. The moist-mode handles my sofrito and açaí perfectly. Cannot imagine cooking without it.",
     avatar: 'S',
     color: 'red',
     verified: true,
   },
   {
-    name: 'David T.',
-    location: 'Miami, FL',
+    name: 'Luca F.',
+    location: 'Milan, Italy',
     rating: 5,
-    title: 'Perfect gift for the home cook',
-    body: "Bought the Pro Bundle as a birthday gift for my wife and she absolutely loves it. Setup took 2 minutes. The build quality feels premium. Very glad we got this over cheaper alternatives.",
-    avatar: 'D',
+    title: 'Restaurante quality at home',
+    body: "I sous-vide at home and this is the only compact sealer that handles both wet marinades and dry goods reliably. Bought the Pro Bundle — worth every cent. Premium feel, professional results. My nonna approved.",
+    avatar: 'L',
     color: 'brown',
     verified: true,
   },
@@ -59,7 +59,7 @@ const colorMap: Record<string, string> = {
         Customer Love
       </span>
       <h2 class="font-display text-4xl sm:text-5xl font-bold text-nutries-grey-900 mb-4">
-        Trusted by 2,400+<br/>Home Cooks
+        Trusted by Home Cooks<br/>Across 40+ Countries
       </h2>
       <!-- Aggregate stars -->
       <div class="flex items-center justify-center gap-2">
@@ -106,10 +106,10 @@ const colorMap: Record<string, string> = {
     <!-- Stats bar -->
     <div class="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-6 bg-gradient-to-r from-nutries-indigo-900 to-nutries-green-900 rounded-3xl p-8">
       {[
-        { value: '99%', label: 'Air removal rate' },
-        { value: '5×',  label: 'Longer freshness' },
-        { value: '10s', label: 'Seal time' },
-        { value: '2yr', label: 'Warranty' },
+        { value: '99%', label: 'Air removal — laboratory verified' },
+        { value: '5×',  label: 'Longer freshness vs. standard storage' },
+        { value: '10s', label: 'Seal time, start to finish' },
+        { value: '2yr', label: 'Full product warranty' },
       ].map(s => (
         <div class="text-center">
           <p class="font-display text-4xl font-bold text-white mb-1">{s.value}</p>

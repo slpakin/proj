@@ -33,9 +33,9 @@ const categories = [
       style="background-image: linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px); background-size: 40px 40px;">
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-3">Our Products</h1>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-3">Shop the Full Range</h1>
       <p class="text-white/60 text-lg max-w-xl mx-auto">
-        Professional-grade freshness technology, built for home kitchens.
+        Every product in the Chef Preserve line — sealers, bags, and bundles — built to professional standards, priced for home kitchens.
       </p>
     </div>
   </section>
@@ -64,8 +64,8 @@ const categories = [
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     {products.length === 0 ? (
       <div class="text-center py-24">
-        <p class="text-nutries-grey-400 text-lg mb-4">No products found.</p>
-        <p class="text-nutries-grey-300 text-sm">Products will appear here after you run the ecommerce.sql setup.</p>
+        <p class="text-nutries-grey-400 text-lg mb-4">Products loading soon.</p>
+        <p class="text-nutries-grey-300 text-sm">Our catalogue is being set up. Please check back shortly or contact us at hello@nutries.co</p>
       </div>
     ) : (
       <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -93,10 +93,10 @@ const categories = [
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
         {[
-          { icon: '🚚', title: 'Free Shipping', sub: 'On orders over $75' },
-          { icon: '↩️', title: '30-Day Returns', sub: 'Hassle-free policy' },
-          { icon: '🔒', title: 'Secure Checkout', sub: 'SSL encrypted, Stripe' },
-          { icon: '🛡️', title: '2-Year Warranty', sub: 'On all sealers' },
+          { icon: '🚚', title: 'Free Shipping', sub: 'On all orders over $75' },
+          { icon: '↩️', title: '30-Day Returns', sub: 'No questions, full refund' },
+          { icon: '🔒', title: 'Secure Checkout', sub: 'Stripe · 256-bit SSL encrypted' },
+          { icon: '🛡️', title: '2-Year Warranty', sub: 'Every sealer, worldwide' },
         ].map(g => (
           <div class="flex flex-col items-center gap-1">
             <span class="text-2xl">{g.icon}</span>

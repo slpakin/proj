@@ -27,7 +27,7 @@ const session_id = Astro.url.searchParams.get('session_id');
       Order Confirmed! 🎉
     </h1>
     <p class="text-nutries-grey-500 text-lg mb-4">
-      Thank you for shopping with Nutries. Your order is on its way!
+      Thank you for choosing Nutries. Your order is confirmed and being prepared.
     </p>
 
     {session_id && (
@@ -41,10 +41,10 @@ const session_id = Astro.url.searchParams.get('session_id');
       <h2 class="font-bold text-nutries-grey-900 mb-4">What Happens Next?</h2>
       <div class="space-y-3">
         {[
-          { icon: '📧', label: 'Confirmation email',  desc: 'Check your inbox — a receipt is on its way.' },
-          { icon: '📦', label: 'Order processing',    desc: "We'll pack your order within 1 business day." },
-          { icon: '🚚', label: 'Shipping',            desc: '3–5 business days via USPS / UPS.' },
-          { icon: '✅', label: 'Delivery',            desc: 'Track your package via the link in your email.' },
+          { icon: '📧', label: 'Confirmation email',  desc: 'A receipt and order summary are heading to your inbox now.' },
+          { icon: '📦', label: 'Order processing',    desc: 'Your order is packed and dispatched within 1 business day.' },
+          { icon: '🚚', label: 'Shipping',            desc: 'Domestic: 2–4 business days. International: 5–10 business days.' },
+          { icon: '✅', label: 'Delivery',            desc: 'A tracking number will be emailed once your parcel ships.' },
         ].map(step => (
           <div class="flex items-start gap-3">
             <span class="text-xl mt-0.5">{step.icon}</span>

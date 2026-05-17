@@ -30,14 +30,14 @@ const stepTxtColor: Record<string, string> = {
     <!-- Header -->
     <div class="text-center mb-16">
       <span class="inline-block px-4 py-1.5 rounded-full bg-nutries-indigo-100 text-nutries-indigo-700 text-sm font-semibold mb-4">
-        Why Nutries
+        Built Different
       </span>
       <h2 class="font-display text-4xl sm:text-5xl font-bold text-nutries-grey-900 mb-4">
-        Engineered for<br/><span class="text-nutries-indigo-700">Real Kitchens</span>
+        Professional Performance.<br/><span class="text-nutries-indigo-700">Home Kitchen Simplicity.</span>
       </h2>
       <p class="text-nutries-grey-500 text-lg max-w-2xl mx-auto">
-        Every feature of the Chef Preserve was designed with daily home cooking in mind —
-        from the one-touch seal to the whisper-quiet motor.
+        The Chef Preserve combines the vacuum power of commercial-grade machines
+        with the footprint and simplicity that busy home kitchens demand.
       </p>
     </div>
 
@@ -47,38 +47,38 @@ const stepTxtColor: Record<string, string> = {
         {
           icon: '⚡',
           color: 'indigo',
-          title: 'One-Touch Sealing',
-          body: 'Place your bag, press the single button — a perfect airtight seal forms in under 10 seconds. No settings to fiddle with.'
+          title: 'One-Touch Seal',
+          body: 'No settings dial, no guesswork. Place the open end of your bag in the slot, press once — an airtight seal forms in under 10 seconds, every time.'
         },
         {
           icon: '🌿',
           color: 'green',
-          title: 'Lock in Nutrients',
-          body: '99% air removal stops oxidation, keeping vitamins and antioxidants intact for up to 5× longer than standard storage.'
+          title: 'Preserve More Nutrition',
+          body: '99% air removal halts oxidation at the source. Independent lab tests show vitamins C and E degrade up to 5× slower in vacuum-sealed food vs. standard bags.'
         },
         {
           icon: '🎛️',
           color: 'brown',
-          title: 'Moist & Dry Modes',
-          body: 'Intelligent mode detection for soups, marinades, and wet foods as well as dry pantry staples — one device, every job.'
+          title: 'Moist & Dry Mode',
+          body: 'A pressure sensor auto-detects whether you\'re sealing wet marinades, soups, or dry pantry goods — and adjusts the vacuum cycle accordingly. No manual switching.'
         },
         {
           icon: '📦',
           color: 'red',
-          title: 'Built-in Roll Storage',
-          body: 'Cut custom-length bags directly from the integrated roll compartment. No scissors needed, no mess on your counter.'
+          title: 'Built-in Roll Cutter',
+          body: 'Create custom-size bags straight from the onboard roll compartment. Cut, seal, done — no scissors, no fumbling, no wasted plastic on the counter.'
         },
         {
           icon: '🔇',
           color: 'indigo',
-          title: 'Whisper-Quiet Motor',
-          body: 'Under 55 dB during operation — quieter than normal conversation, so you can use it any time without disturbing others.'
+          title: 'Under 55 dB Operation',
+          body: 'Quieter than an average conversation. Seal food at 6 am before work or late at night without waking a soul — the motor noise is barely noticeable.'
         },
         {
           icon: '🧼',
           color: 'green',
-          title: 'Easy Clean',
-          body: 'Removable, dishwasher-safe drip tray and a wipe-clean exterior surface. Cleanup takes 30 seconds, not 30 minutes.'
+          title: '30-Second Cleanup',
+          body: 'The drip tray unclips and goes straight in the dishwasher. The exterior is a single wipe-clean surface. No disassembly, no soaking, no faff.'
         },
       ].map(f => (
         <div class={`rounded-2xl border p-6 transition-all duration-300 cursor-default hover:shadow-lg hover:-translate-y-1 ${featureCardBg[f.color]}`}>
@@ -94,16 +94,16 @@ const stepTxtColor: Record<string, string> = {
     <!-- How it works steps -->
     <div class="bg-white rounded-3xl shadow-glass border border-nutries-grey-100 p-8 sm:p-12">
       <h3 class="font-display text-3xl font-bold text-nutries-grey-900 text-center mb-10">
-        3 Steps to Perfect Preservation
+        From Kitchen to Airtight in 3 Steps
       </h3>
       <div class="grid sm:grid-cols-3 gap-8 relative">
         <!-- Connecting line (desktop) -->
         <div class="hidden sm:block absolute top-8 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-0.5 bg-gradient-to-r from-nutries-indigo-200 via-nutries-green-200 to-nutries-brown-200"></div>
 
         {[
-          { step: '01', color: 'indigo', title: 'Place Food in Bag', desc: 'Fill any compatible vacuum bag with fresh food, leaving 3 inches of space at the top.' },
-          { step: '02', color: 'green',  title: 'Insert & Press', desc: 'Slide the open end into the Chef Preserve slot and press the single seal button.' },
-          { step: '03', color: 'brown',  title: 'Done — Store or Freeze', desc: 'An airtight seal forms in 10 seconds. Refrigerate, freeze, or store at room temperature.' },
+          { step: '01', color: 'indigo', title: 'Fill Your Bag', desc: 'Add food to any compatible vacuum bag. Leave 3 inches (7 cm) at the open end — that\'s all the space the sealer needs.' },
+          { step: '02', color: 'green',  title: 'Insert & Press Once', desc: 'Slide the open end into the Chef Preserve slot. Press the single button. The machine does the rest — vacuuming and sealing automatically.' },
+          { step: '03', color: 'brown',  title: 'Sealed. Store Anywhere.', desc: 'A double-stitched airtight seal forms in under 10 seconds. Refrigerate, freeze, or pantry-store. Your food is protected.' },
         ].map(s => (
           <div class="flex flex-col items-center text-center">
             <div class={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 relative z-10 ${stepNumBg[s.color]}`}>
