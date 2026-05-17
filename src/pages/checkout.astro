@@ -1,0 +1,231 @@
+---
+import StoreLayout from '../layouts/StoreLayout.astro';
+import StoreNav    from '../components/store/StoreNav.astro';
+import CartDrawer  from '../components/store/CartDrawer.astro';
+import StoreFooter from '../components/store/StoreFooter.astro';
+---
+
+<StoreLayout title="Checkout — Nutries">
+  <StoreNav />
+  <CartDrawer />
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[70vh]">
+    <div class="text-center mb-10">
+      <h1 class="font-display text-3xl font-bold text-nutries-grey-900 mb-2">Secure Checkout</h1>
+      <p class="text-nutries-grey-400 text-sm flex items-center justify-center gap-1.5">
+        <svg class="w-4 h-4 text-nutries-green-600" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+        </svg>
+        SSL encrypted · Powered by Stripe
+      </p>
+    </div>
+
+    <!-- Empty cart redirect message -->
+    <div id="checkout-empty" class="hidden flex-col items-center py-20 text-center">
+      <p class="text-nutries-grey-500 mb-4">Your cart is empty. Add some products first!</p>
+      <a href="/products" class="px-6 py-3 rounded-xl bg-btn-indigo text-white font-semibold text-sm">Shop Now →</a>
+    </div>
+
+    <div id="checkout-content" class="hidden grid lg:grid-cols-5 gap-10">
+
+      <!-- Left: Order summary -->
+      <div class="lg:col-span-2 order-2 lg:order-1">
+        <div class="bg-nutries-grey-50 rounded-3xl border border-nutries-grey-100 p-6">
+          <h2 class="font-bold text-nutries-grey-900 mb-4">Order Summary</h2>
+          <div id="checkout-items" class="space-y-3 mb-4"></div>
+          <div class="border-t border-nutries-grey-200 pt-4 space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-nutries-grey-500">Subtotal</span>
+              <span class="font-medium" id="co-subtotal">$0.00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-nutries-grey-500">Shipping</span>
+              <span class="font-medium" id="co-shipping">TBD</span>
+            </div>
+            <div class="flex justify-between font-bold text-base pt-2 border-t border-nutries-grey-200">
+              <span>Total</span>
+              <span id="co-total" class="text-nutries-indigo-700">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Stripe redirect form -->
+      <div class="lg:col-span-3 order-1 lg:order-2">
+        <div class="bg-white rounded-3xl border border-nutries-grey-100 shadow-glass p-8">
+          <h2 class="font-bold text-nutries-grey-900 text-xl mb-6">Contact Information</h2>
+
+          <form id="checkout-form" class="space-y-4">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">First Name</label>
+                <input name="firstName" required type="text"
+                  class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 focus:border-transparent transition placeholder-nutries-grey-300"
+                  placeholder="Jane"/>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Last Name</label>
+                <input name="lastName" required type="text"
+                  class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 focus:border-transparent transition placeholder-nutries-grey-300"
+                  placeholder="Doe"/>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Email</label>
+              <input name="email" required type="email"
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 focus:border-transparent transition placeholder-nutries-grey-300"
+                placeholder="jane@example.com"/>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Shipping Address</label>
+              <input name="address" required type="text"
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 focus:border-transparent transition placeholder-nutries-grey-300 mb-3"
+                placeholder="123 Freshness Ave"/>
+              <div class="grid sm:grid-cols-3 gap-3">
+                <input name="city" required type="text"
+                  class="px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition placeholder-nutries-grey-300"
+                  placeholder="City"/>
+                <input name="state" required type="text"
+                  class="px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition placeholder-nutries-grey-300"
+                  placeholder="State"/>
+                <input name="zip" required type="text"
+                  class="px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-800 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition placeholder-nutries-grey-300"
+                  placeholder="ZIP"/>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 py-2">
+              <div class="flex-1 h-px bg-nutries-grey-100"></div>
+              <span class="text-nutries-grey-300 text-xs">Payment handled securely by Stripe</span>
+              <div class="flex-1 h-px bg-nutries-grey-100"></div>
+            </div>
+
+            <!-- Error message -->
+            <div id="checkout-error" class="hidden bg-nutries-red-50 border border-nutries-red-200 text-nutries-red-700 text-sm px-4 py-3 rounded-xl"></div>
+
+            <button
+              type="submit"
+              id="pay-btn"
+              class="w-full py-4 rounded-2xl bg-btn-red text-white font-bold text-lg shadow-md hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center gap-3"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+              <span id="pay-btn-label">Continue to Payment →</span>
+            </button>
+
+            <p class="text-center text-nutries-grey-400 text-xs">
+              You'll enter your card details on Stripe's secure payment page.
+              By continuing, you agree to our Terms of Service and Privacy Policy.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <StoreFooter />
+</StoreLayout>
+
+<script>
+  function renderCheckout() {
+    const cart   = window.NutriesCart?.get() || [];
+    const total  = parseFloat(window.NutriesCart?.total() || '0');
+    const count  = window.NutriesCart?.count() || 0;
+
+    const emptyEl   = document.getElementById('checkout-empty');
+    const contentEl = document.getElementById('checkout-content');
+
+    if (cart.length === 0) {
+      emptyEl?.classList.remove('hidden');
+      emptyEl?.classList.add('flex');
+      contentEl?.classList.add('hidden');
+      return;
+    }
+
+    emptyEl?.classList.add('hidden');
+    emptyEl?.classList.remove('flex');
+    contentEl?.classList.remove('hidden');
+
+    // Summary
+    const shipping = total >= 75 ? 0 : 7.99;
+    const subtotalEl  = document.getElementById('co-subtotal');
+    const shippingEl  = document.getElementById('co-shipping');
+    const totalEl     = document.getElementById('co-total');
+    if (subtotalEl)  subtotalEl.textContent = `$${total.toFixed(2)}`;
+    if (shippingEl)  shippingEl.textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+    if (totalEl)     totalEl.textContent    = `$${(total + shipping).toFixed(2)}`;
+
+    // Items
+    const itemsEl = document.getElementById('checkout-items');
+    if (itemsEl) {
+      itemsEl.innerHTML = cart.map((item: any) => `
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-nutries-grey-100 overflow-hidden flex-shrink-0">
+            <img src="${item.image}" class="w-full h-full object-contain p-1" alt="${item.name}"/>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-medium text-nutries-grey-800 line-clamp-1">${item.name}</p>
+            <p class="text-xs text-nutries-grey-400">Qty: ${item.qty}</p>
+          </div>
+          <span class="text-xs font-bold text-nutries-grey-900">$${(item.price * item.qty).toFixed(2)}</span>
+        </div>`).join('');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', renderCheckout);
+
+  // Form submission → create Stripe session
+  document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form     = e.target as HTMLFormElement;
+    const payBtn   = document.getElementById('pay-btn') as HTMLButtonElement;
+    const labelEl  = document.getElementById('pay-btn-label');
+    const errorEl  = document.getElementById('checkout-error');
+
+    if (labelEl)  labelEl.textContent = 'Redirecting to payment…';
+    if (payBtn)   { payBtn.disabled = true; }
+    if (errorEl)  errorEl.classList.add('hidden');
+
+    try {
+      const cart     = window.NutriesCart?.get() || [];
+      const formData = new FormData(form);
+
+      const res = await fetch('/api/checkout/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cart,
+          customer: {
+            name:    `${formData.get('firstName')} ${formData.get('lastName')}`.trim(),
+            email:   formData.get('email'),
+            address: formData.get('address'),
+            city:    formData.get('city'),
+            state:   formData.get('state'),
+            zip:     formData.get('zip'),
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Checkout failed. Please try again.');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      if (errorEl) {
+        errorEl.textContent = err.message || 'Something went wrong.';
+        errorEl.classList.remove('hidden');
+      }
+      if (labelEl) labelEl.textContent = 'Continue to Payment →';
+      if (payBtn)  payBtn.disabled = false;
+    }
+  });
+</script>

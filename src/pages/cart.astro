@@ -1,0 +1,206 @@
+---
+import StoreLayout from '../layouts/StoreLayout.astro';
+import StoreNav    from '../components/store/StoreNav.astro';
+import CartDrawer  from '../components/store/CartDrawer.astro';
+import StoreFooter from '../components/store/StoreFooter.astro';
+---
+
+<StoreLayout title="Your Cart — Nutries">
+  <StoreNav />
+  <CartDrawer />
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[60vh]">
+
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-nutries-grey-900">Your Cart</h1>
+      <a href="/products" class="text-nutries-indigo-600 text-sm font-medium hover:underline">← Continue Shopping</a>
+    </div>
+
+    <!-- Empty state -->
+    <div id="cart-empty" class="hidden flex-col items-center justify-center py-24 text-center">
+      <div class="w-24 h-24 rounded-full bg-nutries-indigo-50 flex items-center justify-center mb-6">
+        <svg class="w-12 h-12 text-nutries-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-nutries-grey-700 mb-2">Your cart is empty</h2>
+      <p class="text-nutries-grey-400 text-sm mb-6">Looks like you haven't added anything yet.</p>
+      <a href="/products" class="px-6 py-3 rounded-xl bg-btn-indigo text-white font-semibold text-sm hover:shadow-glow-i transition-all">
+        Start Shopping →
+      </a>
+    </div>
+
+    <!-- Cart content -->
+    <div id="cart-content" class="hidden">
+      <div class="grid lg:grid-cols-3 gap-8">
+
+        <!-- Items list -->
+        <div class="lg:col-span-2 space-y-4" id="page-cart-items">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Order summary -->
+        <div>
+          <div class="bg-white rounded-3xl border border-nutries-grey-100 shadow-glass p-6 sticky top-24">
+            <h2 class="font-bold text-nutries-grey-900 text-lg mb-5">Order Summary</h2>
+
+            <!-- Free shipping progress -->
+            <div class="bg-nutries-green-50 rounded-xl p-3 mb-4">
+              <div class="flex justify-between text-xs font-medium text-nutries-green-800 mb-2">
+                <span id="page-ship-msg">Loading...</span>
+                <span>FREE over $75</span>
+              </div>
+              <div class="h-1.5 bg-nutries-green-200 rounded-full overflow-hidden">
+                <div id="page-ship-bar" class="h-full bg-nutries-green-500 rounded-full transition-all duration-500" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-5">
+              <div class="flex justify-between text-sm">
+                <span class="text-nutries-grey-500">Subtotal (<span id="page-count">0</span> items)</span>
+                <span class="font-medium text-nutries-grey-900" id="page-subtotal">$0.00</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-nutries-grey-500">Shipping</span>
+                <span class="font-medium text-nutries-grey-900" id="page-shipping">Calculated at checkout</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-nutries-grey-500">Tax</span>
+                <span class="text-nutries-grey-400 text-xs">Calculated at checkout</span>
+              </div>
+            </div>
+
+            <div class="border-t border-nutries-grey-100 pt-4 mb-5">
+              <div class="flex justify-between font-bold text-lg">
+                <span class="text-nutries-grey-900">Estimated Total</span>
+                <span class="text-nutries-grey-900" id="page-total">$0.00</span>
+              </div>
+            </div>
+
+            <!-- Promo code -->
+            <div class="flex gap-2 mb-5">
+              <input
+                type="text"
+                placeholder="Promo code"
+                class="flex-1 px-3 py-2.5 rounded-xl border border-nutries-grey-200 text-sm text-nutries-grey-700 placeholder-nutries-grey-300 focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+              />
+              <button class="px-4 py-2.5 rounded-xl bg-nutries-grey-100 text-nutries-grey-600 text-sm font-medium hover:bg-nutries-grey-200 transition-colors">Apply</button>
+            </div>
+
+            <a
+              href="/checkout"
+              class="block w-full text-center py-4 rounded-2xl bg-btn-red text-white font-bold text-base hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Proceed to Checkout →
+            </a>
+
+            <!-- Trust marks -->
+            <div class="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-nutries-grey-100">
+              <span class="text-nutries-grey-300 text-xs flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+                SSL Secure
+              </span>
+              <span class="text-nutries-grey-300 text-xs">Powered by Stripe</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <StoreFooter />
+</StoreLayout>
+
+<script>
+  const FREE_SHIP = 75;
+
+  function renderPageCart() {
+    const cart     = window.NutriesCart?.get() || [];
+    const total    = parseFloat(window.NutriesCart?.total() || '0');
+    const count    = window.NutriesCart?.count() || 0;
+    const isEmpty  = cart.length === 0;
+
+    const emptyEl   = document.getElementById('cart-empty');
+    const contentEl = document.getElementById('cart-content');
+    if (isEmpty) {
+      emptyEl?.classList.remove('hidden');
+      emptyEl?.classList.add('flex');
+      contentEl?.classList.add('hidden');
+      return;
+    }
+    emptyEl?.classList.add('hidden');
+    emptyEl?.classList.remove('flex');
+    contentEl?.classList.remove('hidden');
+
+    // Summary numbers
+    const subtotalEl = document.getElementById('page-subtotal');
+    const countEl    = document.getElementById('page-count');
+    const totalEl    = document.getElementById('page-total');
+    const shipEl     = document.getElementById('page-shipping');
+    const shipMsgEl  = document.getElementById('page-ship-msg');
+    const shipBarEl  = document.getElementById('page-ship-bar');
+
+    if (subtotalEl) subtotalEl.textContent = `$${total.toFixed(2)}`;
+    if (countEl)    countEl.textContent    = String(count);
+
+    const shipping = total >= FREE_SHIP ? 0 : 7.99;
+    if (shipEl)   shipEl.textContent = shipping === 0 ? '🎉 FREE' : `$${shipping.toFixed(2)}`;
+    if (totalEl)  totalEl.textContent = `$${(total + shipping).toFixed(2)}`;
+
+    const pct = Math.min((total / FREE_SHIP) * 100, 100);
+    if (shipBarEl) shipBarEl.style.width = `${pct}%`;
+    if (shipMsgEl) {
+      const diff = Math.max(FREE_SHIP - total, 0);
+      shipMsgEl.innerHTML = diff <= 0
+        ? '🎉 <strong>Free shipping unlocked!</strong>'
+        : `Add <strong>$${diff.toFixed(2)}</strong> for free shipping`;
+    }
+
+    // Render items
+    const itemsContainer = document.getElementById('page-cart-items');
+    if (!itemsContainer) return;
+    itemsContainer.innerHTML = '';
+
+    cart.forEach((item: any) => {
+      const div = document.createElement('div');
+      div.className = 'flex gap-4 bg-white rounded-2xl border border-nutries-grey-100 shadow-sm p-4 hover:shadow-md transition-shadow';
+      div.innerHTML = `
+        <a href="/products/${item.slug}" class="w-24 h-24 rounded-xl overflow-hidden bg-gradient-to-br from-nutries-grey-50 to-nutries-indigo-50 flex-shrink-0">
+          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain p-2"/>
+        </a>
+        <div class="flex-1 min-w-0">
+          <a href="/products/${item.slug}" class="font-semibold text-nutries-grey-900 text-sm hover:text-nutries-indigo-700 transition-colors line-clamp-2">${item.name}</a>
+          <p class="text-nutries-indigo-600 font-bold text-sm mt-1">$${item.price.toFixed(2)} each</p>
+          <div class="flex items-center gap-2 mt-3">
+            <button data-action="dec" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors font-bold text-lg">−</button>
+            <span class="w-8 text-center font-bold text-nutries-grey-900">${item.qty}</span>
+            <button data-action="inc" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors font-bold text-lg">+</button>
+            <span class="ml-auto text-base font-bold text-nutries-grey-900">$${(item.price * item.qty).toFixed(2)}</span>
+            <button data-action="remove" data-id="${item.id}" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors ml-2" aria-label="Remove">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>`;
+      itemsContainer.appendChild(div);
+    });
+
+    // Delegation
+    itemsContainer.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el     = btn as HTMLElement;
+        const action = el.dataset.action!;
+        const id     = el.dataset.id!;
+        const cart2  = window.NutriesCart?.get() || [];
+        const itm    = cart2.find((i: any) => i.id === id);
+        if (action === 'inc')    window.NutriesCart?.updateQty(id, (itm?.qty || 0) + 1);
+        if (action === 'dec')    window.NutriesCart?.updateQty(id, (itm?.qty || 1) - 1);
+        if (action === 'remove') window.NutriesCart?.remove(id);
+        renderPageCart();
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', renderPageCart);
+  document.addEventListener('cart:updated', renderPageCart);
+</script>

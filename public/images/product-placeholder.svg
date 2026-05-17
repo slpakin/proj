@@ -1,0 +1,26 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eef2ff"/>
+      <stop offset="1" stop-color="#dcfce7"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" fill="url(#bg)"/>
+  <!-- Vacuum sealer body -->
+  <rect x="70" y="105" width="160" height="110" rx="14" fill="#c7d2fe"/>
+  <rect x="70" y="85" width="160" height="28" rx="10" fill="#4f46e5"/>
+  <!-- Panel -->
+  <rect x="88" y="115" width="124" height="46" rx="8" fill="rgba(255,255,255,0.25)"/>
+  <!-- Buttons -->
+  <circle cx="116" cy="138" r="11" fill="#dc2626"/>
+  <circle cx="150" cy="138" r="11" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="184" cy="138" r="11" fill="#22c55e"/>
+  <!-- Slot -->
+  <rect x="88" y="173" width="124" height="9" rx="4.5" fill="rgba(0,0,0,0.15)"/>
+  <!-- Brand -->
+  <text x="150" y="100" text-anchor="middle" fill="white" font-size="10" font-family="Inter,sans-serif" font-weight="600" opacity="0.9">Chef Preserve</text>
+  <!-- LED -->
+  <circle cx="208" cy="89" r="4" fill="#4ade80"/>
+  <!-- Shadow -->
+  <ellipse cx="150" cy="218" rx="50" ry="7" fill="rgba(0,0,0,0.1)"/>
+</svg>

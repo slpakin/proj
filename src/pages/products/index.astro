@@ -1,0 +1,151 @@
+---
+import StoreLayout from '../../layouts/StoreLayout.astro';
+import StoreNav    from '../../components/store/StoreNav.astro';
+import CartDrawer  from '../../components/store/CartDrawer.astro';
+import ProductCard from '../../components/store/ProductCard.astro';
+import StoreFooter from '../../components/store/StoreFooter.astro';
+import { getSupabase } from '../../lib/supabase';
+
+const supabase = getSupabase();
+const { data: allProducts } = await supabase
+  .from('products')
+  .select('id,slug,name,tagline,price,compare_price,images,is_featured,stock,category')
+  .eq('is_active', true)
+  .order('is_featured', { ascending: false });
+
+const products = allProducts ?? [];
+
+const categories = [
+  { id: 'all',             label: 'All Products' },
+  { id: 'vacuum-sealers',  label: 'Vacuum Sealers' },
+  { id: 'accessories',     label: 'Bags & Accessories' },
+  { id: 'bundles',         label: 'Bundles' },
+];
+---
+
+<StoreLayout title="Shop All Products — Nutries">
+  <StoreNav />
+  <CartDrawer />
+
+  <!-- Page header -->
+  <section class="bg-hero-gradient py-16 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10"
+      style="background-image: linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px); background-size: 40px 40px;">
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-3">Our Products</h1>
+      <p class="text-white/60 text-lg max-w-xl mx-auto">
+        Professional-grade freshness technology, built for home kitchens.
+      </p>
+    </div>
+  </section>
+
+  <!-- Category filters -->
+  <div class="sticky top-[4.5rem] z-30 bg-white/95 backdrop-blur-sm border-b border-nutries-grey-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+      {categories.map(cat => (
+        <button
+          data-filter={cat.id}
+          class={`filter-btn flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+            ${cat.id === 'all'
+              ? 'bg-nutries-indigo-600 text-white'
+              : 'bg-nutries-grey-100 text-nutries-grey-600 hover:bg-nutries-indigo-50 hover:text-nutries-indigo-700'}`}
+        >
+          {cat.label}
+        </button>
+      ))}
+      <div class="ml-auto flex-shrink-0 flex items-center gap-2">
+        <span class="text-nutries-grey-400 text-sm hidden sm:block" id="product-count">{products.length} products</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products grid -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {products.length === 0 ? (
+      <div class="text-center py-24">
+        <p class="text-nutries-grey-400 text-lg mb-4">No products found.</p>
+        <p class="text-nutries-grey-300 text-sm">Products will appear here after you run the ecommerce.sql setup.</p>
+      </div>
+    ) : (
+      <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {products.map(p => (
+          <div data-category={p.category} class="product-item">
+            <ProductCard
+              id={p.id}
+              slug={p.slug}
+              name={p.name}
+              tagline={p.tagline}
+              price={p.price}
+              comparePrice={p.compare_price}
+              image={p.images?.[0]}
+              isFeatured={p.is_featured}
+              stock={p.stock}
+            />
+          </div>
+        ))}
+      </div>
+    )}
+  </main>
+
+  <!-- Guarantee strip -->
+  <div class="bg-nutries-indigo-50 border-y border-nutries-indigo-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        {[
+          { icon: '🚚', title: 'Free Shipping', sub: 'On orders over $75' },
+          { icon: '↩️', title: '30-Day Returns', sub: 'Hassle-free policy' },
+          { icon: '🔒', title: 'Secure Checkout', sub: 'SSL encrypted, Stripe' },
+          { icon: '🛡️', title: '2-Year Warranty', sub: 'On all sealers' },
+        ].map(g => (
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-2xl">{g.icon}</span>
+            <p class="font-semibold text-nutries-grey-900 text-sm">{g.title}</p>
+            <p class="text-nutries-grey-400 text-xs">{g.sub}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <StoreFooter />
+</StoreLayout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const items      = document.querySelectorAll('.product-item');
+  const countEl    = document.getElementById('product-count');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = (btn as HTMLElement).dataset.filter!;
+
+      // Update active state
+      filterBtns.forEach(b => {
+        b.classList.remove('bg-nutries-indigo-600', 'text-white');
+        b.classList.add('bg-nutries-grey-100', 'text-nutries-grey-600');
+      });
+      btn.classList.remove('bg-nutries-grey-100', 'text-nutries-grey-600');
+      btn.classList.add('bg-nutries-indigo-600', 'text-white');
+
+      // Filter items
+      let visible = 0;
+      items.forEach(item => {
+        const el       = item as HTMLElement;
+        const category = el.dataset.category!;
+        const show     = filter === 'all' || category === filter;
+        el.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      if (countEl) countEl.textContent = `${visible} product${visible !== 1 ? 's' : ''}`;
+    });
+  });
+
+  // Handle hash-based category on load
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const btn = document.querySelector(`[data-filter="${hash}"]`) as HTMLElement | null;
+    btn?.click();
+  }
+</script>

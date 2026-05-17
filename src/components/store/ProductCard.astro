@@ -1,0 +1,138 @@
+---
+interface Props {
+  id: string;
+  slug: string;
+  name: string;
+  tagline?: string;
+  price: number;
+  comparePrice?: number | null;
+  image?: string;
+  isFeatured?: boolean;
+  stock?: number;
+}
+const { id, slug, name, tagline, price, comparePrice, image, isFeatured, stock = 0 } = Astro.props;
+const discount = comparePrice ? Math.round(((comparePrice - price) / comparePrice) * 100) : null;
+const inStock   = stock > 0;
+---
+
+<div class="group relative flex flex-col bg-white rounded-3xl border border-nutries-grey-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
+
+  <!-- Badges -->
+  <div class="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+    {isFeatured && (
+      <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-nutries-indigo-600 text-white">
+        Best Seller
+      </span>
+    )}
+    {discount && (
+      <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-nutries-red-600 text-white">
+        Save {discount}%
+      </span>
+    )}
+    {!inStock && (
+      <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-nutries-grey-400 text-white">
+        Out of Stock
+      </span>
+    )}
+  </div>
+
+  <!-- Wishlist button -->
+  <button class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm border border-nutries-grey-100 flex items-center justify-center text-nutries-grey-400 hover:text-nutries-red-500 hover:border-nutries-red-200 transition-colors shadow-sm"
+    aria-label="Add to wishlist">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+    </svg>
+  </button>
+
+  <!-- Image area -->
+  <a href={`/products/${slug}`} class="block relative overflow-hidden bg-gradient-to-br from-nutries-grey-50 to-nutries-indigo-50 aspect-square">
+    <img
+      src={image || '/images/product-placeholder.svg'}
+      alt={name}
+      class="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+    />
+    <!-- Glossy overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-white/10 pointer-events-none"></div>
+  </a>
+
+  <!-- Info -->
+  <div class="flex flex-col flex-1 p-5">
+    <a href={`/products/${slug}`} class="block mb-1">
+      <h3 class="font-semibold text-nutries-grey-900 text-base leading-snug group-hover:text-nutries-indigo-700 transition-colors line-clamp-2">
+        {name}
+      </h3>
+    </a>
+    {tagline && (
+      <p class="text-nutries-grey-400 text-xs mb-3 line-clamp-1">{tagline}</p>
+    )}
+
+    <!-- Stars (static for seeded products) -->
+    <div class="flex items-center gap-1.5 mb-3">
+      <div class="flex gap-0.5 text-nutries-brown-400">
+        {'★★★★★'.split('').map(() => <span>★</span>)}
+      </div>
+      <span class="text-xs text-nutries-grey-400 font-medium">4.9 (127)</span>
+    </div>
+
+    <!-- Price row -->
+    <div class="flex items-baseline gap-2 mb-4">
+      <span class="text-2xl font-bold text-nutries-grey-900">${price.toFixed(2)}</span>
+      {comparePrice && (
+        <span class="text-sm text-nutries-grey-400 line-through">${comparePrice.toFixed(2)}</span>
+      )}
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="mt-auto flex gap-2">
+      <button
+        class="flex-1 py-2.5 px-4 rounded-xl bg-btn-red text-white text-sm font-semibold hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        disabled={!inStock}
+        data-add-to-cart
+        data-id={id}
+        data-slug={slug}
+        data-name={name}
+        data-price={price}
+        data-image={image || '/images/product-placeholder.svg'}
+      >
+        {inStock ? 'Add to Cart' : 'Out of Stock'}
+      </button>
+      <a
+        href={`/products/${slug}`}
+        class="px-3 py-2.5 rounded-xl border border-nutries-grey-200 text-nutries-grey-600 hover:border-nutries-indigo-300 hover:text-nutries-indigo-700 transition-colors"
+        aria-label="View product details"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = btn as HTMLButtonElement;
+      window.NutriesCart?.add({
+        id:    el.dataset.id!,
+        slug:  el.dataset.slug!,
+        name:  el.dataset.name!,
+        price: parseFloat(el.dataset.price!),
+        image: el.dataset.image!,
+        qty:   1,
+      });
+      // Feedback animation
+      el.textContent = '✓ Added!';
+      el.classList.add('bg-nutries-green-600');
+      setTimeout(() => {
+        el.textContent = 'Add to Cart';
+        el.classList.remove('bg-nutries-green-600');
+      }, 1500);
+      // Open cart drawer
+      document.dispatchEvent(new CustomEvent('cart:open'));
+    });
+  });
+</script>

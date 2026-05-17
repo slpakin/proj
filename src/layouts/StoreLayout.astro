@@ -1,0 +1,112 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noCart?: boolean;
+}
+const {
+  title       = 'Nutries — Seal in Freshness, Lock in Nutrition',
+  description = 'Shop the Chef Preserve Compact Vacuum Sealer and accessories. Extend food freshness up to 5× with Nutries premium kitchen tools.',
+  image       = '/og-image.jpg',
+  noCart      = false,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image"       content={image} />
+    <meta property="og:type"        content="website" />
+    <title>{title}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-store.svg" />
+
+    <!-- Cart initialisation — runs before render to avoid flash -->
+    <script is:inline>
+      (function() {
+        try {
+          const raw = localStorage.getItem('nutries-cart');
+          window.__CART__ = raw ? JSON.parse(raw) : [];
+        } catch { window.__CART__ = []; }
+      })();
+    </script>
+  </head>
+  <body class="font-sans antialiased bg-white text-nutries-grey-900 overflow-x-hidden">
+    <slot />
+
+    <!-- Global cart state manager -->
+    <script>
+      // Cart module — single source of truth
+      const CART_KEY = 'nutries-cart';
+
+      function loadCart() {
+        try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+        catch { return []; }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart } }));
+      }
+
+      window.NutriesCart = {
+        get() { return loadCart(); },
+
+        add(item) {
+          const cart = loadCart();
+          const idx  = cart.findIndex(i => i.id === item.id);
+          if (idx >= 0) {
+            cart[idx].qty = Math.min(cart[idx].qty + (item.qty || 1), 99);
+          } else {
+            cart.push({ ...item, qty: item.qty || 1 });
+          }
+          saveCart(cart);
+        },
+
+        remove(id) {
+          saveCart(loadCart().filter(i => i.id !== id));
+        },
+
+        updateQty(id, qty) {
+          if (qty < 1) { this.remove(id); return; }
+          const cart = loadCart();
+          const idx  = cart.findIndex(i => i.id === id);
+          if (idx >= 0) { cart[idx].qty = Math.min(qty, 99); saveCart(cart); }
+        },
+
+        clear() { saveCart([]); },
+
+        count() { return loadCart().reduce((s, i) => s + i.qty, 0); },
+
+        total() {
+          return loadCart().reduce((s, i) => s + i.price * i.qty, 0).toFixed(2);
+        },
+      };
+
+      // Update all cart count badges on every change
+      document.addEventListener('cart:updated', () => {
+        const count = window.NutriesCart.count();
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+          el.textContent = count;
+          el.classList.toggle('hidden', count === 0);
+        });
+      });
+
+      // Fire once on load to hydrate counts
+      document.addEventListener('DOMContentLoaded', () => {
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: { cart: window.NutriesCart.get() }
+        }));
+      });
+    </script>
+  </body>
+</html>

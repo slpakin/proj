@@ -1,0 +1,139 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-nutries-grey-900 text-white">
+
+  <!-- Newsletter bar -->
+  <div class="border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div>
+          <h3 class="font-display text-2xl font-bold text-white mb-1">Get freshness tips & exclusive deals</h3>
+          <p class="text-white/50 text-sm">Join 8,000+ home cooks. No spam, unsubscribe anytime.</p>
+        </div>
+        <form class="flex w-full sm:w-auto gap-2" onsubmit="return false;">
+          <input
+            type="email"
+            placeholder="you@email.com"
+            class="flex-1 sm:w-64 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-green-400 focus:border-transparent transition"
+          />
+          <button
+            type="submit"
+            class="px-5 py-3 rounded-xl bg-btn-green text-white text-sm font-semibold hover:shadow-glow-g transition-all duration-200 whitespace-nowrap"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main footer -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
+
+      <!-- Brand -->
+      <div class="col-span-2 sm:col-span-4 lg:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <svg viewBox="0 0 36 36" class="w-8 h-8">
+            <circle cx="18" cy="18" r="18" fill="url(#footer-logo-grad)"/>
+            <path d="M10 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="18" cy="20" r="3" fill="white"/>
+            <path d="M14 13l4-5 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+            <defs>
+              <linearGradient id="footer-logo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4f46e5"/>
+                <stop offset="0.5" stop-color="#dc2626"/>
+                <stop offset="1" stop-color="#15803d"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="text-2xl font-bold tracking-tight">nutries</span>
+        </div>
+        <p class="text-white/50 text-sm leading-relaxed max-w-xs mb-5">
+          Helping home cooks preserve flavour, nutrients, and money — one seal at a time.
+        </p>
+        <!-- Social icons -->
+        <div class="flex gap-3">
+          {[
+            { label: 'Instagram', icon: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z' },
+            { label: 'TikTok',    icon: 'M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.21 8.21 0 004.79 1.52v-3.4a4.85 4.85 0 01-1.02-.12z' },
+            { label: 'Facebook',  icon: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' },
+          ].map(s => (
+            <a href="#" aria-label={s.label}
+              class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d={s.icon}/>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h4 class="font-semibold text-sm text-white mb-4 uppercase tracking-wider">Shop</h4>
+        <ul class="space-y-2.5">
+          {[
+            { label: 'All Products',       href: '/products' },
+            { label: 'Vacuum Sealers',     href: '/products#vacuum-sealers' },
+            { label: 'Bags & Accessories', href: '/products#accessories' },
+            { label: 'Bundles & Kits',     href: '/products#bundles' },
+          ].map(l => (
+            <li>
+              <a href={l.href} class="text-white/50 hover:text-white text-sm transition-colors">{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-sm text-white mb-4 uppercase tracking-wider">Support</h4>
+        <ul class="space-y-2.5">
+          {[
+            { label: 'FAQ',              href: '#' },
+            { label: 'Shipping Policy',  href: '#' },
+            { label: 'Returns',          href: '#' },
+            { label: 'Contact Us',       href: '#' },
+            { label: 'My Orders',        href: '/login' },
+          ].map(l => (
+            <li>
+              <a href={l.href} class="text-white/50 hover:text-white text-sm transition-colors">{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-sm text-white mb-4 uppercase tracking-wider">Company</h4>
+        <ul class="space-y-2.5">
+          {[
+            { label: 'About Nutries', href: '#' },
+            { label: 'Blog',          href: '#' },
+            { label: 'Press',         href: '#' },
+            { label: 'Privacy Policy',href: '#' },
+            { label: 'Terms of Use',  href: '#' },
+          ].map(l => (
+            <li>
+              <a href={l.href} class="text-white/50 hover:text-white text-sm transition-colors">{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-white/40 text-xs">© {year} Nutries. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <!-- Payment icons -->
+        {['Visa', 'MC', 'Amex', 'PayPal', 'Apple Pay'].map(p => (
+          <span class="px-2 py-1 bg-white/10 rounded text-white/40 text-xs font-medium">{p}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>

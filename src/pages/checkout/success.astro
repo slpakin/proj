@@ -1,0 +1,76 @@
+---
+import StoreLayout from '../../layouts/StoreLayout.astro';
+import StoreNav    from '../../components/store/StoreNav.astro';
+import CartDrawer  from '../../components/store/CartDrawer.astro';
+import StoreFooter from '../../components/store/StoreFooter.astro';
+
+const session_id = Astro.url.searchParams.get('session_id');
+---
+
+<StoreLayout title="Order Confirmed — Nutries">
+  <StoreNav />
+  <CartDrawer />
+
+  <main class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center min-h-[70vh] flex flex-col items-center justify-center">
+
+    <!-- Success animation -->
+    <div class="relative mb-8">
+      <div class="w-28 h-28 rounded-full bg-nutries-green-100 flex items-center justify-center mx-auto">
+        <svg class="w-14 h-14 text-nutries-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <div class="absolute inset-0 rounded-full bg-nutries-green-200/50 scale-125 animate-ping" style="animation-duration:2s"></div>
+    </div>
+
+    <h1 class="font-display text-4xl sm:text-5xl font-bold text-nutries-grey-900 mb-3">
+      Order Confirmed! 🎉
+    </h1>
+    <p class="text-nutries-grey-500 text-lg mb-4">
+      Thank you for shopping with Nutries. Your order is on its way!
+    </p>
+
+    {session_id && (
+      <p class="text-nutries-grey-400 text-sm mb-8">
+        Order reference: <span class="font-mono text-nutries-indigo-600">{session_id.slice(-12).toUpperCase()}</span>
+      </p>
+    )}
+
+    <!-- Next steps -->
+    <div class="bg-white rounded-2xl border border-nutries-grey-100 shadow-sm p-6 text-left mb-8 w-full">
+      <h2 class="font-bold text-nutries-grey-900 mb-4">What Happens Next?</h2>
+      <div class="space-y-3">
+        {[
+          { icon: '📧', label: 'Confirmation email',  desc: 'Check your inbox — a receipt is on its way.' },
+          { icon: '📦', label: 'Order processing',    desc: "We'll pack your order within 1 business day." },
+          { icon: '🚚', label: 'Shipping',            desc: '3–5 business days via USPS / UPS.' },
+          { icon: '✅', label: 'Delivery',            desc: 'Track your package via the link in your email.' },
+        ].map(step => (
+          <div class="flex items-start gap-3">
+            <span class="text-xl mt-0.5">{step.icon}</span>
+            <div>
+              <p class="font-semibold text-nutries-grey-900 text-sm">{step.label}</p>
+              <p class="text-nutries-grey-400 text-xs">{step.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+      <a href="/products" class="px-8 py-3.5 rounded-2xl bg-btn-indigo text-white font-bold text-sm hover:shadow-glow-i transition-all">
+        Continue Shopping →
+      </a>
+      <a href="/" class="px-8 py-3.5 rounded-2xl border border-nutries-grey-200 text-nutries-grey-600 font-semibold text-sm hover:bg-nutries-grey-50 transition-all">
+        Back to Home
+      </a>
+    </div>
+  </main>
+
+  <StoreFooter />
+</StoreLayout>
+
+<script>
+  // Clear cart on successful payment
+  window.NutriesCart?.clear();
+</script>

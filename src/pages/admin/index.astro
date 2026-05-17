@@ -1,0 +1,201 @@
+---
+import StoreLayout from '../../layouts/StoreLayout.astro';
+import StoreNav    from '../../components/store/StoreNav.astro';
+import CartDrawer  from '../../components/store/CartDrawer.astro';
+import StoreFooter from '../../components/store/StoreFooter.astro';
+import { getSessionFromCookies, isAdmin, getSupabase } from '../../lib/supabase';
+
+const { user } = await getSessionFromCookies(Astro.cookies);
+if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
+
+const supabase = getSupabase();
+const { data: products } = await supabase
+  .from('products')
+  .select('id,slug,name,price,stock,category,is_active,is_featured,images,created_at')
+  .order('created_at', { ascending: false });
+
+const { data: orders } = await supabase
+  .from('orders')
+  .select('id,status,total_cents,customer_email,created_at')
+  .order('created_at', { ascending: false })
+  .limit(10);
+
+const allProducts = products ?? [];
+const allOrders   = orders   ?? [];
+
+const stats = {
+  total:    allProducts.length,
+  active:   allProducts.filter(p => p.is_active).length,
+  featured: allProducts.filter(p => p.is_featured).length,
+  revenue:  allOrders.filter(o => o.status === 'paid').reduce((s, o) => s + o.total_cents, 0) / 100,
+};
+
+// Colour maps for stats cards — defined here to avoid TS generic syntax inside JSX
+const statBg: Record<string, string> = {
+  indigo: 'bg-nutries-indigo-50 border-nutries-indigo-100',
+  green:  'bg-nutries-green-50  border-nutries-green-100',
+  brown:  'bg-nutries-brown-50  border-nutries-brown-100',
+  red:    'bg-nutries-red-50    border-nutries-red-100',
+};
+const statTxt: Record<string, string> = {
+  indigo: 'text-nutries-indigo-700',
+  green:  'text-nutries-green-700',
+  brown:  'text-nutries-brown-700',
+  red:    'text-nutries-red-700',
+};
+---
+
+<StoreLayout title="Admin Dashboard — Nutries">
+  <StoreNav />
+  <CartDrawer />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="font-display text-3xl font-bold text-nutries-grey-900">Admin Dashboard</h1>
+        <p class="text-nutries-grey-400 text-sm mt-1">Logged in as <strong class="text-nutries-indigo-600">{user.email}</strong></p>
+      </div>
+      <div class="flex gap-3">
+        <a href="/admin/products/new"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-btn-red text-white font-semibold text-sm hover:shadow-glow-r transition-all">
+          + Add Product
+        </a>
+        <form action="/api/auth/logout" method="POST">
+          <button class="px-5 py-2.5 rounded-xl border border-nutries-grey-200 text-nutries-grey-600 text-sm font-medium hover:bg-nutries-grey-50 transition-colors">
+            Logout
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+      {[
+        { label: 'Total Products', value: stats.total,                color: 'indigo' },
+        { label: 'Active Listings', value: stats.active,             color: 'green' },
+        { label: 'Featured',        value: stats.featured,           color: 'brown' },
+        { label: 'Total Revenue',   value: `$${stats.revenue.toFixed(2)}`, color: 'red' },
+      ].map(s => (
+        <div class={`rounded-2xl border p-5 ${statBg[s.color]}`}>
+          <p class={`text-3xl font-bold ${statTxt[s.color]}`}>{s.value}</p>
+          <p class="text-nutries-grey-500 text-xs font-medium mt-1">{s.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+
+      <!-- Products table -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-nutries-grey-900 text-lg">Products</h2>
+          <a href="/admin/products/new" class="text-nutries-indigo-600 text-sm font-semibold hover:underline">+ New</a>
+        </div>
+
+        {allProducts.length === 0 ? (
+          <div class="bg-white rounded-2xl border border-nutries-grey-100 p-12 text-center">
+            <p class="text-nutries-grey-400 text-sm mb-3">No products yet. Run <code class="bg-nutries-grey-100 px-2 py-0.5 rounded text-xs">supabase/ecommerce.sql</code> first.</p>
+            <a href="/admin/products/new" class="text-nutries-indigo-600 text-sm font-semibold hover:underline">+ Add your first product</a>
+          </div>
+        ) : (
+          <div class="bg-white rounded-2xl border border-nutries-grey-100 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-nutries-grey-50 border-b border-nutries-grey-100">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-nutries-grey-500 uppercase tracking-wide">Product</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-nutries-grey-500 uppercase tracking-wide">Price</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-nutries-grey-500 uppercase tracking-wide">Stock</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-nutries-grey-500 uppercase tracking-wide">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-nutries-grey-500 uppercase tracking-wide">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-nutries-grey-50">
+                  {allProducts.map(p => (
+                    <tr class="hover:bg-nutries-grey-50/50 transition-colors">
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                          <div class="w-10 h-10 rounded-lg bg-nutries-indigo-50 overflow-hidden flex-shrink-0">
+                            <img src={p.images?.[0] || '/images/product-placeholder.svg'} alt={p.name} class="w-full h-full object-contain p-1"/>
+                          </div>
+                          <div>
+                            <p class="font-medium text-nutries-grey-900 line-clamp-1">{p.name}</p>
+                            <p class="text-nutries-grey-400 text-xs capitalize">{p.category.replace(/-/g, ' ')}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3 font-semibold text-nutries-grey-900">${p.price.toFixed(2)}</td>
+                      <td class="px-4 py-3">
+                        <span class={`font-medium ${p.stock > 10 ? 'text-nutries-green-700' : p.stock > 0 ? 'text-nutries-brown-700' : 'text-nutries-red-700'}`}>
+                          {p.stock}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="flex flex-col gap-1">
+                          <span class={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${p.is_active ? 'bg-nutries-green-100 text-nutries-green-700' : 'bg-nutries-grey-100 text-nutries-grey-500'}`}>
+                            {p.is_active ? 'Active' : 'Hidden'}
+                          </span>
+                          {p.is_featured && (
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-nutries-indigo-100 text-nutries-indigo-700">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                          <a href={`/products/${p.slug}`} target="_blank" class="p-1.5 rounded-lg hover:bg-nutries-indigo-50 text-nutries-grey-400 hover:text-nutries-indigo-600 transition-colors" title="View">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                          </a>
+                          <a href={`/admin/products/${p.id}/edit`} class="p-1.5 rounded-lg hover:bg-nutries-brown-50 text-nutries-grey-400 hover:text-nutries-brown-600 transition-colors" title="Edit">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Recent orders -->
+      <div>
+        <h2 class="font-bold text-nutries-grey-900 text-lg mb-4">Recent Orders</h2>
+        {allOrders.length === 0 ? (
+          <div class="bg-white rounded-2xl border border-nutries-grey-100 p-8 text-center">
+            <p class="text-nutries-grey-400 text-sm">No orders yet.</p>
+          </div>
+        ) : (
+          <div class="space-y-3">
+            {allOrders.map(o => (
+              <div class="bg-white rounded-xl border border-nutries-grey-100 p-4 hover:shadow-sm transition-shadow">
+                <div class="flex items-start justify-between mb-1">
+                  <p class="font-mono text-xs text-nutries-grey-400">{o.id.slice(-8).toUpperCase()}</p>
+                  <span class={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    o.status === 'paid'      ? 'bg-nutries-green-100 text-nutries-green-700' :
+                    o.status === 'shipped'   ? 'bg-nutries-indigo-100 text-nutries-indigo-700' :
+                    o.status === 'pending'   ? 'bg-nutries-brown-100 text-nutries-brown-700' :
+                    'bg-nutries-grey-100 text-nutries-grey-500'}`}>
+                    {o.status}
+                  </span>
+                </div>
+                <p class="text-nutries-grey-700 text-sm font-semibold">${(o.total_cents / 100).toFixed(2)}</p>
+                <p class="text-nutries-grey-400 text-xs">{o.customer_email}</p>
+                <p class="text-nutries-grey-300 text-xs mt-1">
+                  {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </main>
+
+  <StoreFooter />
+</StoreLayout>

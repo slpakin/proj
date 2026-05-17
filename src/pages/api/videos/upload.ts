@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getSessionFromCookies, isAdmin } from '../../../../lib/supabase';
+import { getSessionFromCookies, isAdmin } from '../../../lib/supabase';
 
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 

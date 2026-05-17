@@ -1,0 +1,121 @@
+---
+const reviews = [
+  {
+    name: 'Maria L.',
+    location: 'Austin, TX',
+    rating: 5,
+    title: 'Life-changing for meal prep!',
+    body: "I prep meals on Sundays and this vacuum sealer has completely changed the game. My veggies stay crisp all week and meat lasts 3× longer in the freezer. The one-button design is so easy — I've even got my kids using it.",
+    avatar: 'M',
+    color: 'indigo',
+    verified: true,
+  },
+  {
+    name: 'James R.',
+    location: 'Chicago, IL',
+    rating: 5,
+    title: 'Worth every penny',
+    body: "I was skeptical at first but this thing really works. I sealed a batch of salmon and it was perfectly fresh 12 days later in the fridge. The compact size is great — it sits on my counter without eating up space.",
+    avatar: 'J',
+    color: 'green',
+    verified: true,
+  },
+  {
+    name: 'Sarah K.',
+    location: 'Portland, OR',
+    rating: 5,
+    title: 'Quiet and incredibly easy to clean',
+    body: "My old sealer was LOUD. This one is practically silent. The drip tray pops right out, goes in the dishwasher, and we're done. I use it every other day. Highly recommend the bundle — the bags are high quality too.",
+    avatar: 'S',
+    color: 'red',
+    verified: true,
+  },
+  {
+    name: 'David T.',
+    location: 'Miami, FL',
+    rating: 5,
+    title: 'Perfect gift for the home cook',
+    body: "Bought the Pro Bundle as a birthday gift for my wife and she absolutely loves it. Setup took 2 minutes. The build quality feels premium. Very glad we got this over cheaper alternatives.",
+    avatar: 'D',
+    color: 'brown',
+    verified: true,
+  },
+];
+
+const colorMap: Record<string, string> = {
+  indigo: 'bg-nutries-indigo-600',
+  green:  'bg-nutries-green-600',
+  red:    'bg-nutries-red-600',
+  brown:  'bg-nutries-brown-600',
+};
+---
+
+<section class="py-24 bg-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="text-center mb-14">
+      <span class="inline-block px-4 py-1.5 rounded-full bg-nutries-brown-50 text-nutries-brown-700 text-sm font-semibold border border-nutries-brown-200 mb-4">
+        Customer Love
+      </span>
+      <h2 class="font-display text-4xl sm:text-5xl font-bold text-nutries-grey-900 mb-4">
+        Trusted by 2,400+<br/>Home Cooks
+      </h2>
+      <!-- Aggregate stars -->
+      <div class="flex items-center justify-center gap-2">
+        <div class="flex gap-1 text-nutries-brown-400 text-2xl">
+          {'★★★★★'.split('').map(s => <span>{s}</span>)}
+        </div>
+        <span class="text-nutries-grey-700 font-bold text-lg">4.9</span>
+        <span class="text-nutries-grey-400 text-sm">/ 5.0 average rating</span>
+      </div>
+    </div>
+
+    <!-- Review cards -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {reviews.map(r => (
+        <div class="flex flex-col bg-nutries-grey-50 rounded-2xl p-6 border border-nutries-grey-100 hover:shadow-md transition-shadow duration-300">
+          <!-- Stars -->
+          <div class="flex gap-0.5 text-nutries-brown-400 text-sm mb-3">
+            {'★★★★★'.split('').map(s => <span>{s}</span>)}
+          </div>
+          <h4 class="font-bold text-nutries-grey-900 text-sm mb-2">"{r.title}"</h4>
+          <p class="text-nutries-grey-500 text-sm leading-relaxed flex-1">{r.body}</p>
+          <!-- Author -->
+          <div class="flex items-center gap-3 mt-5 pt-4 border-t border-nutries-grey-200">
+            <div class={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${colorMap[r.color]}`}>
+              {r.avatar}
+            </div>
+            <div>
+              <p class="text-nutries-grey-900 text-sm font-semibold">{r.name}</p>
+              <p class="text-nutries-grey-400 text-xs">{r.location}</p>
+            </div>
+            {r.verified && (
+              <div class="ml-auto flex items-center gap-1 text-nutries-green-600 text-xs font-medium">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+                Verified
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Stats bar -->
+    <div class="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-6 bg-gradient-to-r from-nutries-indigo-900 to-nutries-green-900 rounded-3xl p-8">
+      {[
+        { value: '99%', label: 'Air removal rate' },
+        { value: '5×',  label: 'Longer freshness' },
+        { value: '10s', label: 'Seal time' },
+        { value: '2yr', label: 'Warranty' },
+      ].map(s => (
+        <div class="text-center">
+          <p class="font-display text-4xl font-bold text-white mb-1">{s.value}</p>
+          <p class="text-white/60 text-sm">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,240 @@
+---
+// Cart Drawer — slides in from right, fully reactive via NutriesCart
+---
+
+<!-- Overlay -->
+<div
+  id="cart-overlay"
+  class="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"
+  aria-hidden="true"
+></div>
+
+<!-- Drawer -->
+<aside
+  id="cart-drawer"
+  class="fixed top-0 right-0 z-[90] h-full w-full sm:w-[420px] bg-white shadow-2xl translate-x-full transition-transform duration-350 ease-out flex flex-col"
+  aria-label="Shopping cart"
+  role="dialog"
+  aria-modal="true"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-5 border-b border-nutries-grey-100">
+    <div class="flex items-center gap-3">
+      <svg class="w-5 h-5 text-nutries-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+      <h2 class="text-lg font-semibold text-nutries-grey-900">Your Cart</h2>
+      <span
+        id="drawer-count"
+        class="text-xs font-bold bg-nutries-red-100 text-nutries-red-700 px-2 py-0.5 rounded-full"
+      >0 items</span>
+    </div>
+    <button
+      id="cart-close-btn"
+      class="p-2 rounded-full hover:bg-nutries-grey-100 text-nutries-grey-500 transition-colors"
+      aria-label="Close cart"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Items list -->
+  <div id="cart-items-list" class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+    <!-- Populated by JS -->
+    <div id="cart-empty-state" class="hidden flex-col items-center justify-center h-full text-center py-20">
+      <div class="w-20 h-20 rounded-full bg-nutries-grey-100 flex items-center justify-center mb-4">
+        <svg class="w-10 h-10 text-nutries-grey-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+      </div>
+      <p class="text-nutries-grey-500 text-sm font-medium">Your cart is empty</p>
+      <a href="/products" class="mt-4 text-nutries-indigo-600 text-sm font-semibold hover:underline">Start shopping →</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="cart-footer" class="border-t border-nutries-grey-100 px-6 py-5 space-y-4 hidden">
+    <!-- Free shipping progress -->
+    <div id="shipping-progress-wrap" class="bg-nutries-green-50 rounded-xl p-3">
+      <div class="flex justify-between text-xs font-medium text-nutries-green-800 mb-1.5">
+        <span id="shipping-msg">Add <strong id="shipping-diff">$X</strong> more for free shipping!</span>
+        <span class="text-nutries-green-600 font-semibold">FREE over $75</span>
+      </div>
+      <div class="h-1.5 bg-nutries-green-200 rounded-full overflow-hidden">
+        <div id="shipping-bar" class="h-full bg-nutries-green-500 rounded-full transition-all duration-500" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Subtotal -->
+    <div class="flex items-center justify-between">
+      <span class="text-nutries-grey-600 text-sm">Subtotal</span>
+      <span id="drawer-subtotal" class="text-xl font-bold text-nutries-grey-900">$0.00</span>
+    </div>
+    <p class="text-xs text-nutries-grey-400">Shipping and taxes calculated at checkout.</p>
+
+    <!-- Checkout button -->
+    <a
+      href="/checkout"
+      id="checkout-link"
+      class="block w-full text-center py-3.5 px-6 rounded-2xl bg-btn-red text-white font-bold text-base shadow-md hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5"
+    >
+      Proceed to Checkout →
+    </a>
+
+    <!-- Continue shopping -->
+    <button
+      id="cart-close-btn-2"
+      class="block w-full text-center text-sm text-nutries-grey-500 hover:text-nutries-indigo-600 font-medium transition-colors"
+    >
+      ← Continue Shopping
+    </button>
+  </div>
+</aside>
+
+<script>
+  const overlay    = document.getElementById('cart-overlay');
+  const drawer     = document.getElementById('cart-drawer');
+  const itemsList  = document.getElementById('cart-items-list');
+  const emptyState = document.getElementById('cart-empty-state');
+  const footer     = document.getElementById('cart-footer');
+  const drawerCount   = document.getElementById('drawer-count');
+  const drawerSubtotal = document.getElementById('drawer-subtotal');
+  const shippingBar    = document.getElementById('shipping-bar');
+  const shippingDiff   = document.getElementById('shipping-diff');
+  const shippingMsg    = document.getElementById('shipping-msg');
+
+  const FREE_SHIPPING_THRESHOLD = 75;
+
+  function openCart() {
+    overlay?.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      overlay?.classList.replace('opacity-0', 'opacity-100');
+      drawer?.classList.replace('translate-x-full', 'translate-x-0');
+    });
+    document.body.style.overflow = 'hidden';
+    renderCart();
+  }
+
+  function closeCart() {
+    overlay?.classList.replace('opacity-100', 'opacity-0');
+    drawer?.classList.replace('translate-x-0', 'translate-x-full');
+    setTimeout(() => {
+      overlay?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }, 350);
+  }
+
+  function renderCart() {
+    const cart  = window.NutriesCart?.get() || [];
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+
+    // Count badge
+    if (drawerCount) drawerCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+
+    // Subtotal
+    if (drawerSubtotal) drawerSubtotal.textContent = `$${total.toFixed(2)}`;
+
+    // Shipping progress
+    const pct = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
+    if (shippingBar) shippingBar.style.width = `${pct}%`;
+    if (shippingDiff && shippingMsg) {
+      const diff = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
+      if (diff <= 0) {
+        shippingMsg.innerHTML = '🎉 <strong>You\'ve unlocked free shipping!</strong>';
+      } else {
+        shippingMsg.innerHTML = `Add <strong>$${diff.toFixed(2)}</strong> more for free shipping!`;
+      }
+    }
+
+    // Empty state
+    if (cart.length === 0) {
+      emptyState?.classList.remove('hidden');
+      emptyState?.classList.add('flex');
+      footer?.classList.add('hidden');
+      // Clear item rows
+      const rows = itemsList?.querySelectorAll('[data-cart-item]');
+      rows?.forEach(r => r.remove());
+      return;
+    }
+
+    emptyState?.classList.add('hidden');
+    emptyState?.classList.remove('flex');
+    footer?.classList.remove('hidden');
+
+    // Render rows
+    const existing = new Set(Array.from(itemsList?.querySelectorAll('[data-cart-item]') || []).map(el => el.dataset.cartItem));
+    const current  = new Set(cart.map(i => i.id));
+
+    // Remove rows no longer in cart
+    existing.forEach(id => {
+      if (!current.has(id)) itemsList?.querySelector(`[data-cart-item="${id}"]`)?.remove();
+    });
+
+    // Add or update rows
+    cart.forEach(item => {
+      let row = itemsList?.querySelector(`[data-cart-item="${item.id}"]`);
+      if (!row) {
+        const div = document.createElement('div');
+        div.dataset.cartItem = item.id;
+        div.className = 'flex gap-4 items-start bg-nutries-grey-50 rounded-2xl p-3 border border-nutries-grey-100';
+        div.innerHTML = `
+          <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-nutries-indigo-100 to-nutries-green-100 flex-shrink-0 overflow-hidden">
+            <img src="${item.image || '/images/product-placeholder.svg'}" alt="${item.name}" class="w-full h-full object-cover"/>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-nutries-grey-900 leading-tight line-clamp-2">${item.name}</p>
+            <p class="text-nutries-indigo-600 font-bold text-sm mt-1">$${(item.price).toFixed(2)}</p>
+            <div class="flex items-center gap-2 mt-2">
+              <button data-action="dec" data-id="${item.id}" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors text-lg leading-none font-bold">−</button>
+              <span class="w-6 text-center text-sm font-bold text-nutries-grey-800" data-qty>${item.qty}</span>
+              <button data-action="inc" data-id="${item.id}" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors text-lg leading-none font-bold">+</button>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <p class="text-sm font-bold text-nutries-grey-900 whitespace-nowrap" data-line-total>$${(item.price * item.qty).toFixed(2)}</p>
+            <button data-action="remove" data-id="${item.id}" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors" aria-label="Remove">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>`;
+        itemsList?.appendChild(div);
+        row = div;
+      } else {
+        // Update qty and line total
+        const qtyEl      = row.querySelector('[data-qty]');
+        const lineTotEl  = row.querySelector('[data-line-total]');
+        if (qtyEl)     qtyEl.textContent     = String(item.qty);
+        if (lineTotEl) lineTotEl.textContent = `$${(item.price * item.qty).toFixed(2)}`;
+      }
+    });
+  }
+
+  // Event delegation for qty controls
+  itemsList?.addEventListener('click', e => {
+    const btn    = (e.target as Element).closest('[data-action]') as HTMLElement | null;
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const id     = btn.dataset.id;
+    if (!id) return;
+    const cart = window.NutriesCart?.get() || [];
+    const item = cart.find((i: any) => i.id === id);
+    if (action === 'inc')    window.NutriesCart?.updateQty(id, (item?.qty || 0) + 1);
+    if (action === 'dec')    window.NutriesCart?.updateQty(id, (item?.qty || 1) - 1);
+    if (action === 'remove') window.NutriesCart?.remove(id);
+    renderCart();
+  });
+
+  // Open / close listeners
+  document.addEventListener('cart:open', openCart);
+  document.addEventListener('cart:updated', renderCart);
+  overlay?.addEventListener('click', closeCart);
+  document.getElementById('cart-close-btn')?.addEventListener('click', closeCart);
+  document.getElementById('cart-close-btn-2')?.addEventListener('click', closeCart);
+
+  // Keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+</script>

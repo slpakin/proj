@@ -1,0 +1,176 @@
+---
+interface Props {
+  transparent?: boolean;
+}
+const { transparent = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  id="store-nav"
+  class={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    transparent
+      ? 'bg-transparent'
+      : 'bg-white/90 backdrop-blur-md border-b border-nutries-grey-100 shadow-sm'
+  }`}
+>
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-18 py-3">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 group flex-shrink-0">
+        <div class="relative w-9 h-9">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <circle cx="18" cy="18" r="18" fill="url(#logo-grad)"/>
+            <path d="M10 20c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="18" cy="20" r="3" fill="white"/>
+            <path d="M14 13l4-5 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4f46e5"/>
+                <stop offset="0.5" stop-color="#dc2626" offset="0.5"/>
+                <stop offset="1" stop-color="#15803d"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class={`text-2xl font-bold tracking-tight transition-colors ${
+          transparent ? 'text-white' : 'text-nutries-indigo-800'
+        }`}>
+          nutries
+        </span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <div class="hidden md:flex items-center gap-8">
+        {[
+          { href: '/products', label: 'Shop' },
+          { href: '/products#vacuum-sealers', label: 'Vacuum Sealers' },
+          { href: '/products#accessories', label: 'Accessories' },
+          { href: '/#how-it-works', label: 'How It Works' },
+        ].map(link => (
+          <a
+            href={link.href}
+            class={`text-sm font-medium transition-colors hover:opacity-100 ${
+              transparent
+                ? 'text-white/80 hover:text-white'
+                : 'text-nutries-grey-600 hover:text-nutries-indigo-700'
+            }`}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Search (placeholder) -->
+        <button
+          class={`hidden sm:flex p-2 rounded-full transition-colors ${
+            transparent ? 'text-white/80 hover:bg-white/10' : 'text-nutries-grey-500 hover:bg-nutries-grey-100'
+          }`}
+          aria-label="Search"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+        </button>
+
+        <!-- Account -->
+        <a
+          href="/login"
+          class={`hidden sm:flex p-2 rounded-full transition-colors ${
+            transparent ? 'text-white/80 hover:bg-white/10' : 'text-nutries-grey-500 hover:bg-nutries-grey-100'
+          }`}
+          aria-label="Account"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"/>
+          </svg>
+        </a>
+
+        <!-- Cart Button -->
+        <button
+          id="cart-open-btn"
+          class={`relative flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+            transparent
+              ? 'bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-sm'
+              : 'bg-nutries-red-600 hover:bg-nutries-red-700 text-white shadow-sm hover:shadow-glow-r'
+          }`}
+          aria-label="Open cart"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span>Cart</span>
+          <span
+            data-cart-count
+            class="hidden absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 bg-nutries-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center"
+          >0</span>
+        </button>
+
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" class={`md:hidden p-2 rounded-full ${transparent ? 'text-white' : 'text-nutries-grey-700'}`}>
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-white/10 mt-1">
+      <div class="flex flex-col gap-1 pt-3">
+        {[
+          { href: '/products', label: 'Shop All' },
+          { href: '/products#vacuum-sealers', label: 'Vacuum Sealers' },
+          { href: '/products#accessories', label: 'Accessories' },
+          { href: '/#how-it-works', label: 'How It Works' },
+          { href: '/login', label: 'My Account' },
+        ].map(link => (
+          <a href={link.href} class={`px-2 py-2.5 rounded-lg text-sm font-medium ${transparent ? 'text-white/90' : 'text-nutries-grey-700'} hover:bg-nutries-indigo-50 hover:text-nutries-indigo-700`}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Spacer to push content below fixed nav (only when not transparent) -->
+{!transparent && <div class="h-[4.5rem]"></div>}
+
+<script>
+  // Scroll behaviour — turn transparent nav opaque on scroll
+  const nav = document.getElementById('store-nav');
+  if (nav && nav.classList.contains('bg-transparent')) {
+    const makeOpaque = () => {
+      if (window.scrollY > 60) {
+        nav.classList.replace('bg-transparent', 'bg-white/90');
+        nav.classList.add('backdrop-blur-md', 'border-b', 'border-nutries-grey-100', 'shadow-sm');
+        // Switch text colours
+        nav.querySelectorAll('.text-white').forEach(el => {
+          el.classList.replace('text-white', 'text-nutries-grey-700');
+        });
+        nav.querySelectorAll('.text-white\\/80').forEach(el => {
+          el.classList.remove('text-white/80');
+          el.classList.add('text-nutries-grey-600');
+        });
+      }
+    };
+    window.addEventListener('scroll', makeOpaque, { passive: true });
+  }
+
+  // Mobile menu toggle
+  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.toggle('hidden');
+  });
+
+  // Open cart drawer
+  document.getElementById('cart-open-btn')?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('cart:open'));
+  });
+</script>
