@@ -37,3 +37,11 @@ export async function getSessionFromCookies(cookies: AstroCookies) {
 export function isAdmin(email: string | undefined) {
   return email === import.meta.env.ADMIN_EMAIL;
 }
+
+export function getSupabaseAdmin() {
+  return createClient(
+    import.meta.env.SUPABASE_URL,
+    import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}

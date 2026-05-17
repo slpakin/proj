@@ -1,47 +1,90 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import StoreLayout from '../../layouts/StoreLayout.astro';
+
+const supabaseUrl     = import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
-<Layout title="Confirming your account… — AkinsMedia">
-  <div class="min-h-screen bg-slate-50 flex items-center justify-center">
+<StoreLayout title="Signing you in… — Nutries">
+  <div class="min-h-screen bg-white flex flex-col items-center justify-center">
     <div class="text-center">
-      <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-700 rounded-full animate-spin mx-auto mb-4"></div>
-      <p class="text-slate-600 text-sm font-medium">Confirming your account…</p>
+      <!-- Nutries spinner -->
+      <div class="relative w-16 h-16 mx-auto mb-6">
+        <div class="absolute inset-0 rounded-full border-4 border-nutries-indigo-100"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-t-nutries-indigo-600 animate-spin"></div>
+        <div class="absolute inset-2 rounded-full bg-nutries-indigo-50 flex items-center justify-center">
+          <svg class="w-5 h-5 text-nutries-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+        </div>
+      </div>
+      <p class="font-display font-semibold text-nutries-grey-900 text-lg mb-1">Signing you in…</p>
+      <p class="text-nutries-grey-400 text-sm">Please wait a moment.</p>
     </div>
   </div>
-</Layout>
+</StoreLayout>
 
-<script>
-  // Supabase email confirmation redirects here with tokens in the URL hash
-  // e.g. /auth/callback#access_token=xxx&refresh_token=xxx&type=signup
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script define:vars={{ supabaseUrl, supabaseAnonKey }}>
+  const { createClient } = window.supabase;
+  const sb = createClient(supabaseUrl, supabaseAnonKey);
+
   async function handleCallback() {
+    // First check URL hash for tokens (email confirmation / magic link)
     const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
+    const hashParams = new URLSearchParams(hash);
 
-    const accessToken  = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    const errorDesc    = params.get('error_description');
-
+    const errorDesc = hashParams.get('error_description') || new URLSearchParams(window.location.search).get('error_description');
     if (errorDesc) {
       window.location.href = '/login?error=' + encodeURIComponent(errorDesc);
       return;
     }
 
-    if (!accessToken || !refreshToken) {
-      window.location.href = '/login?error=' + encodeURIComponent('Confirmation link is invalid or expired.');
+    const hashAccessToken  = hashParams.get('access_token');
+    const hashRefreshToken = hashParams.get('refresh_token');
+
+    if (hashAccessToken && hashRefreshToken) {
+      await exchangeAndRedirect(hashAccessToken, hashRefreshToken);
       return;
     }
 
-    const res = await fetch('/api/auth/set-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
-    });
+    // OAuth code flow — Supabase handles this via getSession()
+    const deadline = Date.now() + 5000;
+    let session = null;
 
-    if (res.ok) {
-      window.location.href = '/dashboard';
-    } else {
-      window.location.href = '/login?error=' + encodeURIComponent('Could not confirm account. Please try again.');
+    while (Date.now() < deadline) {
+      const { data } = await sb.auth.getSession();
+      if (data?.session) {
+        session = data.session;
+        break;
+      }
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    if (!session) {
+      window.location.href = '/login?error=' + encodeURIComponent('Auth failed. Please try again.');
+      return;
+    }
+
+    await exchangeAndRedirect(session.access_token, session.refresh_token);
+  }
+
+  async function exchangeAndRedirect(access_token, refresh_token) {
+    try {
+      const res = await fetch('/api/auth/set-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token, refresh_token }),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        window.location.href = data.redirect || '/dashboard';
+      } else {
+        window.location.href = '/login?error=' + encodeURIComponent('Could not complete sign-in. Please try again.');
+      }
+    } catch {
+      window.location.href = '/login?error=' + encodeURIComponent('Network error. Please try again.');
     }
   }
 

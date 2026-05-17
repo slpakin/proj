@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getSupabase } from '../../../lib/supabase';
+import { getSupabase, isAdmin } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const form     = await request.formData();
@@ -33,5 +33,5 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   cookies.set('sb-access-token',  data.session.access_token,  { ...cookieOpts, maxAge: 60 * 60 * 24 * 7 });
   cookies.set('sb-refresh-token', data.session.refresh_token, { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
 
-  return redirect('/dashboard');
+  return redirect(isAdmin(data.user?.email) ? '/admin' : '/dashboard');
 };

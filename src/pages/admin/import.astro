@@ -1,0 +1,340 @@
+---
+import StoreLayout from '../../layouts/StoreLayout.astro';
+import StoreNav    from '../../components/store/StoreNav.astro';
+import CartDrawer  from '../../components/store/CartDrawer.astro';
+import StoreFooter from '../../components/store/StoreFooter.astro';
+import { getSessionFromCookies, isAdmin } from '../../lib/supabase';
+
+const { user } = await getSessionFromCookies(Astro.cookies);
+if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
+---
+
+<StoreLayout title="Import from AliExpress — Nutries Admin">
+  <StoreNav />
+  <CartDrawer />
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-nutries-grey-400 mb-6">
+      <a href="/admin" class="hover:text-nutries-indigo-600">Admin</a>
+      <span>/</span>
+      <span class="text-nutries-grey-700 font-medium">Import from AliExpress</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="font-display text-3xl font-bold text-nutries-grey-900">Import from AliExpress</h1>
+      <a href="/admin" class="text-sm text-nutries-grey-400 hover:text-nutries-indigo-600 font-medium transition-colors">
+        &larr; Back to Admin
+      </a>
+    </div>
+
+    <!-- Fetch form -->
+    <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6 mb-8">
+      <p class="text-nutries-grey-500 text-sm mb-4">
+        Paste any AliExpress product URL below. We'll extract the title, images, description and price automatically.
+      </p>
+      <div class="flex gap-3">
+        <input
+          id="ali-url"
+          type="url"
+          placeholder="https://www.aliexpress.com/item/1234567890.html"
+          class="flex-1 px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+        />
+        <button
+          id="fetch-btn"
+          type="button"
+          class="px-5 py-3 rounded-xl bg-btn-indigo text-white font-semibold text-sm hover:shadow-glow-i transition-all hover:-translate-y-0.5 whitespace-nowrap"
+        >
+          Fetch Product
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div id="fetch-loading" class="hidden mt-4 flex items-center gap-3 text-nutries-indigo-600 text-sm">
+        <div class="w-4 h-4 border-2 border-nutries-indigo-200 border-t-nutries-indigo-600 rounded-full animate-spin flex-shrink-0"></div>
+        Fetching product data…
+      </div>
+
+      <!-- Error -->
+      <div id="fetch-error" class="hidden mt-4 p-3.5 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700"></div>
+    </div>
+
+    <!-- Preview + form (hidden until fetch succeeds) -->
+    <div id="product-section" class="hidden space-y-6">
+
+      <!-- Preview card -->
+      <div id="preview-card" class="bg-white rounded-2xl border border-nutries-grey-100 p-5 flex gap-5 items-start">
+        <img id="preview-img" src="" alt="Product preview" class="w-28 h-28 rounded-xl object-cover border border-nutries-grey-100 flex-shrink-0"/>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-nutries-grey-900 text-base leading-snug mb-1" id="preview-name"></p>
+          <p class="text-nutries-red-600 font-bold text-lg" id="preview-price"></p>
+          <p class="text-nutries-grey-400 text-xs mt-1">Extracted from AliExpress — review and edit below before saving.</p>
+        </div>
+      </div>
+
+      <!-- Full product form -->
+      <form id="product-form" class="space-y-6">
+
+        <div id="form-error" class="hidden bg-nutries-red-50 border border-nutries-red-200 text-nutries-red-700 text-sm px-4 py-3 rounded-xl"></div>
+        <div id="form-success" class="hidden bg-nutries-green-50 border border-nutries-green-200 text-nutries-green-700 text-sm px-4 py-3 rounded-xl"></div>
+
+        <!-- Basic info -->
+        <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6 space-y-4">
+          <h2 class="font-semibold text-nutries-grey-900">Basic Information</h2>
+
+          <div>
+            <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Product Name *</label>
+            <input id="f-name" name="name" required type="text" maxlength="200"
+              class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+              placeholder="e.g., Vacuum Sealer Pro"/>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Slug *</label>
+            <div class="flex items-center gap-2">
+              <span class="text-nutries-grey-400 text-sm">/products/</span>
+              <input id="f-slug" name="slug" required type="text" pattern="[a-z0-9-]+"
+                class="flex-1 px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+                placeholder="vacuum-sealer-pro"/>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Tagline</label>
+            <input id="f-tagline" name="tagline" type="text" maxlength="200"
+              class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+              placeholder="Short subtitle"/>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Description</label>
+            <textarea id="f-description" name="description" rows="5"
+              class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition resize-none"
+              placeholder="Full product description…"></textarea>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6">
+          <h2 class="font-semibold text-nutries-grey-900 mb-4">Pricing & Inventory</h2>
+          <div class="grid sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Price ($) *</label>
+              <input id="f-price" name="price" required type="number" step="0.01" min="0"
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+                placeholder="49.99"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Compare-at ($)</label>
+              <input id="f-compare-price" name="compare_price" type="number" step="0.01" min="0"
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+                placeholder="79.99"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Stock *</label>
+              <input id="f-stock" name="stock" required type="number" min="0" value="50"
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"/>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">SKU</label>
+            <input id="f-sku" name="sku" type="text"
+              class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
+              placeholder="ALI-001"/>
+          </div>
+        </div>
+
+        <!-- Organisation -->
+        <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6">
+          <h2 class="font-semibold text-nutries-grey-900 mb-4">Organisation</h2>
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-semibold text-nutries-grey-700 mb-1.5 uppercase tracking-wide">Category *</label>
+              <select id="f-category" name="category" required
+                class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition bg-white">
+                <option value="vacuum-sealers">Vacuum Sealers</option>
+                <option value="accessories">Bags & Accessories</option>
+                <option value="bundles">Bundles & Kits</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-6">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input id="f-featured" name="is_featured" type="checkbox" class="rounded border-nutries-grey-300 text-nutries-indigo-600 focus:ring-nutries-indigo-300"/>
+              <span class="text-sm text-nutries-grey-700 font-medium">Featured product</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input id="f-active" name="is_active" type="checkbox" checked class="rounded border-nutries-grey-300 text-nutries-green-600 focus:ring-nutries-green-300"/>
+              <span class="text-sm text-nutries-grey-700 font-medium">Active (visible to shoppers)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6">
+          <h2 class="font-semibold text-nutries-grey-900 mb-2">Feature Bullets</h2>
+          <p class="text-nutries-grey-400 text-xs mb-4">One feature per line.</p>
+          <textarea id="f-features" name="features" rows="6"
+            class="w-full px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition resize-none"
+            placeholder="Feature one&#10;Feature two&#10;Feature three"></textarea>
+        </div>
+
+        <!-- Hidden images field -->
+        <input type="hidden" id="f-images" name="images" value="[]"/>
+
+        <!-- Submit -->
+        <div class="flex gap-4">
+          <button
+            type="submit"
+            id="submit-btn"
+            class="flex-1 py-3.5 rounded-2xl bg-btn-green text-white font-bold text-base hover:shadow-glow-g transition-all hover:-translate-y-0.5"
+          >
+            Save to Store
+          </button>
+          <a href="/admin" class="px-6 py-3.5 rounded-2xl border border-nutries-grey-200 text-nutries-grey-600 font-semibold text-base hover:bg-nutries-grey-50 transition-colors text-center">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+
+  </main>
+  <StoreFooter />
+</StoreLayout>
+
+<script>
+  const aliUrl     = document.getElementById('ali-url') as HTMLInputElement;
+  const fetchBtn   = document.getElementById('fetch-btn') as HTMLButtonElement;
+  const loading    = document.getElementById('fetch-loading')!;
+  const fetchError = document.getElementById('fetch-error')!;
+  const section    = document.getElementById('product-section')!;
+
+  const previewImg   = document.getElementById('preview-img')   as HTMLImageElement;
+  const previewName  = document.getElementById('preview-name')!;
+  const previewPrice = document.getElementById('preview-price')!;
+
+  const fName         = document.getElementById('f-name')          as HTMLInputElement;
+  const fSlug         = document.getElementById('f-slug')          as HTMLInputElement;
+  const fTagline      = document.getElementById('f-tagline')       as HTMLInputElement;
+  const fDescription  = document.getElementById('f-description')   as HTMLTextAreaElement;
+  const fPrice        = document.getElementById('f-price')         as HTMLInputElement;
+  const fCompare      = document.getElementById('f-compare-price') as HTMLInputElement;
+  const fFeatures     = document.getElementById('f-features')      as HTMLTextAreaElement;
+  const fImages       = document.getElementById('f-images')        as HTMLInputElement;
+
+  // Auto-slug from name
+  fName.addEventListener('input', () => {
+    if (fSlug.dataset.manual) return;
+    fSlug.value = fName.value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 60);
+  });
+  fSlug.addEventListener('input', () => { fSlug.dataset.manual = '1'; });
+
+  fetchBtn.addEventListener('click', async () => {
+    const url = aliUrl.value.trim();
+    if (!url) { aliUrl.focus(); return; }
+
+    fetchBtn.disabled = true;
+    fetchBtn.textContent = 'Fetching…';
+    loading.classList.remove('hidden');
+    fetchError.classList.add('hidden');
+    section.classList.add('hidden');
+
+    try {
+      const res  = await fetch('/api/admin/import-product', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ url }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) throw new Error(data.error || 'Failed to fetch product');
+
+      // Fill preview
+      const firstImg = data.images?.[0] || '';
+      previewImg.src         = firstImg;
+      previewImg.style.display = firstImg ? '' : 'none';
+      previewName.textContent  = data.name || '';
+      previewPrice.textContent = data.price ? `$${Number(data.price).toFixed(2)}` : '';
+
+      // Fill form
+      fName.value        = data.name        || '';
+      fTagline.value     = data.tagline      || '';
+      fDescription.value = data.description  || '';
+      fPrice.value       = data.price        ? String(data.price) : '';
+      fCompare.value     = data.compare_price ? String(data.compare_price) : '';
+      fFeatures.value    = (data.features || []).join('\n');
+      fImages.value      = JSON.stringify(data.images || []);
+
+      // Auto-generate slug
+      fSlug.dataset.manual = '';
+      fSlug.value = (data.name || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .slice(0, 60);
+
+      section.classList.remove('hidden');
+    } catch (err: any) {
+      fetchError.textContent = err.message;
+      fetchError.classList.remove('hidden');
+    } finally {
+      loading.classList.add('hidden');
+      fetchBtn.disabled    = false;
+      fetchBtn.textContent = 'Fetch Product';
+    }
+  });
+
+  // Product form submit
+  document.getElementById('product-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form    = e.target as HTMLFormElement;
+    const btn     = document.getElementById('submit-btn') as HTMLButtonElement;
+    const errorEl = document.getElementById('form-error')!;
+    const succEl  = document.getElementById('form-success')!;
+
+    btn.disabled    = true;
+    btn.textContent = 'Saving…';
+    errorEl.classList.add('hidden');
+
+    try {
+      const data = new FormData(form);
+      const body = {
+        name:          data.get('name'),
+        slug:          data.get('slug'),
+        tagline:       data.get('tagline')       || '',
+        description:   data.get('description')   || '',
+        price:         parseFloat(data.get('price') as string),
+        compare_price: data.get('compare_price') ? parseFloat(data.get('compare_price') as string) : null,
+        stock:         parseInt(data.get('stock') as string, 10),
+        sku:           data.get('sku')           || null,
+        category:      data.get('category'),
+        is_featured:   data.has('is_featured'),
+        is_active:     data.has('is_active'),
+        features:      (data.get('features') as string || '').split('\n').map((f: string) => f.trim()).filter(Boolean),
+        images:        JSON.parse((data.get('images') as string) || '[]'),
+      };
+
+      const res  = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const json = await res.json();
+
+      if (!res.ok || json.error) throw new Error(json.error || 'Failed to save product');
+
+      succEl.textContent = `Product "${json.name}" saved! Redirecting…`;
+      succEl.classList.remove('hidden');
+      setTimeout(() => window.location.href = '/admin', 1500);
+    } catch (err: any) {
+      errorEl.textContent = err.message;
+      errorEl.classList.remove('hidden');
+      btn.disabled    = false;
+      btn.textContent = 'Save to Store';
+    }
+  });
+</script>
