@@ -89,71 +89,20 @@
       <!-- Glow ring -->
       <div class="absolute w-[360px] h-[360px] lg:w-[480px] lg:h-[480px] rounded-full bg-gradient-to-br from-nutries-indigo-500/20 to-nutries-green-500/20 blur-2xl"></div>
 
-      <!-- Glass product card -->
+      <!-- Product photo card -->
       <div class="relative animate-float z-10">
-        <div class="relative w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-3xl overflow-hidden
-          bg-gradient-to-br from-white/20 to-white/5 border border-white/25
-          backdrop-blur-md shadow-product flex items-center justify-center">
+        <div class="relative w-72 h-72 sm:w-80 sm:h-80 lg:w-[420px] lg:h-[420px] rounded-3xl overflow-hidden
+          border border-white/25 shadow-product">
 
-          <!-- Product SVG illustration -->
-          <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="w-4/5 h-4/5 drop-shadow-2xl">
-            <!-- Base body -->
-            <rect x="60" y="100" width="180" height="120" rx="16" fill="url(#body-grad)"/>
-            <!-- Top panel -->
-            <rect x="60" y="80" width="180" height="30" rx="10" fill="url(#top-grad)"/>
-            <!-- Control panel -->
-            <rect x="80" y="110" width="140" height="50" rx="8" fill="rgba(255,255,255,0.1)"/>
-            <!-- Buttons -->
-            <circle cx="110" cy="135" r="12" fill="url(#btn1-grad)"/>
-            <circle cx="150" cy="135" r="12" fill="rgba(255,255,255,0.3)"/>
-            <circle cx="190" cy="135" r="12" fill="url(#btn2-grad)"/>
-            <!-- Button icons -->
-            <text x="105" y="140" fill="white" font-size="12" font-family="sans-serif">▶</text>
-            <text x="146" y="140" fill="white" font-size="10" font-family="sans-serif" opacity="0.8">⟳</text>
-            <text x="185" y="140" fill="white" font-size="10" font-family="sans-serif">✦</text>
-            <!-- Slot -->
-            <rect x="80" y="175" width="140" height="10" rx="5" fill="rgba(0,0,0,0.2)"/>
-            <rect x="80" y="175" width="140" height="10" rx="5" fill="url(#slot-grad)" opacity="0.6"/>
-            <!-- Brand text -->
-            <text x="150" y="95" text-anchor="middle" fill="white" font-size="11" font-family="Inter, sans-serif" font-weight="600" opacity="0.9">Chef Preserve</text>
-            <!-- LED indicator -->
-            <circle cx="210" cy="85" r="4" fill="#4ade80"/>
-            <circle cx="210" cy="85" r="7" fill="#4ade80" opacity="0.3"/>
-            <!-- Handle -->
-            <rect x="230" y="110" width="20" height="80" rx="10" fill="url(#handle-grad)"/>
-            <!-- Logo leaf -->
-            <ellipse cx="150" cy="205" rx="50" ry="8" fill="rgba(0,0,0,0.15)"/>
-
-            <defs>
-              <linearGradient id="body-grad" x1="60" y1="100" x2="240" y2="220" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#e8eaf6"/>
-                <stop offset="1" stop-color="#c5cae9"/>
-              </linearGradient>
-              <linearGradient id="top-grad" x1="60" y1="80" x2="240" y2="110" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#4f46e5"/>
-                <stop offset="1" stop-color="#3730a3"/>
-              </linearGradient>
-              <linearGradient id="btn1-grad" x1="98" y1="123" x2="122" y2="147" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#ef4444"/>
-                <stop offset="1" stop-color="#b91c1c"/>
-              </linearGradient>
-              <linearGradient id="btn2-grad" x1="178" y1="123" x2="202" y2="147" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#22c55e"/>
-                <stop offset="1" stop-color="#15803d"/>
-              </linearGradient>
-              <linearGradient id="slot-grad" x1="80" y1="175" x2="220" y2="185" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#4f46e5" stop-opacity="0.8"/>
-                <stop offset="1" stop-color="#22c55e" stop-opacity="0.8"/>
-              </linearGradient>
-              <linearGradient id="handle-grad" x1="230" y1="110" x2="250" y2="190" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#9ca3af"/>
-                <stop offset="1" stop-color="#6b7280"/>
-              </linearGradient>
-            </defs>
-          </svg>
+          <!-- Real product photo -->
+          <img
+            src="/images/products/product-avocado.jpg"
+            alt="Chef Preserve vacuum sealer sealing avocados"
+            class="w-full h-full object-cover"
+          />
 
           <!-- Glossy overlay -->
-          <div class="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
         </div>
 
         <!-- Floating badges -->
