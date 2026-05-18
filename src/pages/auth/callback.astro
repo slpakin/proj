@@ -1,8 +1,5 @@
 ---
 import StoreLayout from '../../layouts/StoreLayout.astro';
-
-const supabaseUrl     = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <StoreLayout title="Signing you in… — Nutries">
@@ -24,69 +21,40 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
   </div>
 </StoreLayout>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script define:vars={{ supabaseUrl, supabaseAnonKey }}>
-  const { createClient } = window.supabase;
-  const sb = createClient(supabaseUrl, supabaseAnonKey);
+<script is:inline>
+  (function () {
+    var hashParams   = new URLSearchParams(window.location.hash.substring(1));
+    var searchParams = new URLSearchParams(window.location.search);
 
-  async function handleCallback() {
-    // First check URL hash for tokens (email confirmation / magic link)
-    const hash = window.location.hash.substring(1);
-    const hashParams = new URLSearchParams(hash);
-
-    const errorDesc = hashParams.get('error_description') || new URLSearchParams(window.location.search).get('error_description');
+    // Surface any OAuth error immediately
+    var errorDesc = hashParams.get('error_description') || searchParams.get('error_description');
     if (errorDesc) {
       window.location.href = '/login?error=' + encodeURIComponent(errorDesc);
       return;
     }
 
-    const hashAccessToken  = hashParams.get('access_token');
-    const hashRefreshToken = hashParams.get('refresh_token');
+    var accessToken  = hashParams.get('access_token');
+    var refreshToken = hashParams.get('refresh_token');
 
-    if (hashAccessToken && hashRefreshToken) {
-      await exchangeAndRedirect(hashAccessToken, hashRefreshToken);
+    if (!accessToken || !refreshToken) {
+      // No tokens — nothing to exchange
+      window.location.href = '/login?error=' + encodeURIComponent('Sign-in failed. Please try again.');
       return;
     }
 
-    // OAuth code flow — Supabase handles this via getSession()
-    const deadline = Date.now() + 5000;
-    let session = null;
-
-    while (Date.now() < deadline) {
-      const { data } = await sb.auth.getSession();
-      if (data?.session) {
-        session = data.session;
-        break;
-      }
-      await new Promise(r => setTimeout(r, 300));
-    }
-
-    if (!session) {
-      window.location.href = '/login?error=' + encodeURIComponent('Auth failed. Please try again.');
-      return;
-    }
-
-    await exchangeAndRedirect(session.access_token, session.refresh_token);
-  }
-
-  async function exchangeAndRedirect(access_token, refresh_token) {
-    try {
-      const res = await fetch('/api/auth/set-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ access_token, refresh_token }),
+    // Exchange tokens for a server-side session (sets httpOnly cookies)
+    fetch('/api/auth/set-session', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+    })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          window.location.href = data.redirect || '/dashboard';
+        });
+      })
+      .catch(function () {
+        window.location.href = '/login?error=' + encodeURIComponent('Network error. Please try again.');
       });
-
-      if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        window.location.href = data.redirect || '/dashboard';
-      } else {
-        window.location.href = '/login?error=' + encodeURIComponent('Could not complete sign-in. Please try again.');
-      }
-    } catch {
-      window.location.href = '/login?error=' + encodeURIComponent('Network error. Please try again.');
-    }
-  }
-
-  handleCallback();
+  })();
 </script>
