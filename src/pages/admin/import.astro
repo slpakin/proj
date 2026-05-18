@@ -202,9 +202,8 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
 
   </main>
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
+  <script is:inline>
 (function () {
   var aliUrl     = document.getElementById('ali-url');
   var fetchBtn   = document.getElementById('fetch-btn');
@@ -341,3 +340,4 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
   });
 })();
 </script>
+</StoreLayout>

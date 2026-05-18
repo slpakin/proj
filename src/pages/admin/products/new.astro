@@ -175,9 +175,8 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
   </main>
 
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
+  <script is:inline>
 (function () {
   var dropZone  = document.getElementById('drop-zone');
   var fileInput = document.getElementById('image-input');
@@ -329,3 +328,4 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
   }
 })();
 </script>
+</StoreLayout>
