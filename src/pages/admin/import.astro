@@ -205,27 +205,28 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
 </StoreLayout>
 
 <script is:inline>
-  const aliUrl     = document.getElementById('ali-url') as HTMLInputElement;
-  const fetchBtn   = document.getElementById('fetch-btn') as HTMLButtonElement;
-  const loading    = document.getElementById('fetch-loading')!;
-  const fetchError = document.getElementById('fetch-error')!;
-  const section    = document.getElementById('product-section')!;
+(function () {
+  var aliUrl     = document.getElementById('ali-url');
+  var fetchBtn   = document.getElementById('fetch-btn');
+  var loading    = document.getElementById('fetch-loading');
+  var fetchError = document.getElementById('fetch-error');
+  var section    = document.getElementById('product-section');
 
-  const previewImg   = document.getElementById('preview-img')   as HTMLImageElement;
-  const previewName  = document.getElementById('preview-name')!;
-  const previewPrice = document.getElementById('preview-price')!;
+  var previewImg   = document.getElementById('preview-img');
+  var previewName  = document.getElementById('preview-name');
+  var previewPrice = document.getElementById('preview-price');
 
-  const fName         = document.getElementById('f-name')          as HTMLInputElement;
-  const fSlug         = document.getElementById('f-slug')          as HTMLInputElement;
-  const fTagline      = document.getElementById('f-tagline')       as HTMLInputElement;
-  const fDescription  = document.getElementById('f-description')   as HTMLTextAreaElement;
-  const fPrice        = document.getElementById('f-price')         as HTMLInputElement;
-  const fCompare      = document.getElementById('f-compare-price') as HTMLInputElement;
-  const fFeatures     = document.getElementById('f-features')      as HTMLTextAreaElement;
-  const fImages       = document.getElementById('f-images')        as HTMLInputElement;
+  var fName        = document.getElementById('f-name');
+  var fSlug        = document.getElementById('f-slug');
+  var fTagline     = document.getElementById('f-tagline');
+  var fDescription = document.getElementById('f-description');
+  var fPrice       = document.getElementById('f-price');
+  var fCompare     = document.getElementById('f-compare-price');
+  var fFeatures    = document.getElementById('f-features');
+  var fImages      = document.getElementById('f-images');
 
   // Auto-slug from name
-  fName.addEventListener('input', () => {
+  fName.addEventListener('input', function () {
     if (fSlug.dataset.manual) return;
     fSlug.value = fName.value
       .toLowerCase()
@@ -234,107 +235,109 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
       .replace(/-+/g, '-')
       .slice(0, 60);
   });
-  fSlug.addEventListener('input', () => { fSlug.dataset.manual = '1'; });
+  fSlug.addEventListener('input', function () { fSlug.dataset.manual = '1'; });
 
-  fetchBtn.addEventListener('click', async () => {
-    const url = aliUrl.value.trim();
+  fetchBtn.addEventListener('click', function () {
+    var url = aliUrl.value.trim();
     if (!url) { aliUrl.focus(); return; }
 
     fetchBtn.disabled = true;
-    fetchBtn.textContent = 'Fetchingâ€¦';
+    fetchBtn.textContent = 'Fetching…';
     loading.classList.remove('hidden');
     fetchError.classList.add('hidden');
     section.classList.add('hidden');
 
-    try {
-      const res  = await fetch('/api/admin/import-product', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ url }),
+    fetch('/api/admin/import-product', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ url: url }),
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (r) {
+        if (!r.ok || r.data.error) throw new Error(r.data.error || 'Failed to fetch product');
+        var data = r.data;
+
+        // Fill preview
+        var firstImg = (data.images && data.images[0]) || '';
+        previewImg.src = firstImg;
+        previewImg.style.display = firstImg ? '' : 'none';
+        previewName.textContent  = data.name || '';
+        previewPrice.textContent = data.price ? '$' + Number(data.price).toFixed(2) : '';
+
+        // Fill form
+        fName.value        = data.name        || '';
+        fTagline.value     = data.tagline      || '';
+        fDescription.value = data.description  || '';
+        fPrice.value       = data.price        ? String(data.price) : '';
+        fCompare.value     = data.compare_price ? String(data.compare_price) : '';
+        fFeatures.value    = (data.features || []).join('\n');
+        fImages.value      = JSON.stringify(data.images || []);
+
+        // Auto-generate slug
+        fSlug.dataset.manual = '';
+        fSlug.value = (data.name || '')
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .slice(0, 60);
+
+        section.classList.remove('hidden');
+      })
+      .catch(function (err) {
+        fetchError.textContent = err.message;
+        fetchError.classList.remove('hidden');
+      })
+      .finally(function () {
+        loading.classList.add('hidden');
+        fetchBtn.disabled    = false;
+        fetchBtn.textContent = 'Fetch Product';
       });
-      const data = await res.json();
-
-      if (!res.ok || data.error) throw new Error(data.error || 'Failed to fetch product');
-
-      // Fill preview
-      const firstImg = data.images?.[0] || '';
-      previewImg.src         = firstImg;
-      previewImg.style.display = firstImg ? '' : 'none';
-      previewName.textContent  = data.name || '';
-      previewPrice.textContent = data.price ? `$${Number(data.price).toFixed(2)}` : '';
-
-      // Fill form
-      fName.value        = data.name        || '';
-      fTagline.value     = data.tagline      || '';
-      fDescription.value = data.description  || '';
-      fPrice.value       = data.price        ? String(data.price) : '';
-      fCompare.value     = data.compare_price ? String(data.compare_price) : '';
-      fFeatures.value    = (data.features || []).join('\n');
-      fImages.value      = JSON.stringify(data.images || []);
-
-      // Auto-generate slug
-      fSlug.dataset.manual = '';
-      fSlug.value = (data.name || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .slice(0, 60);
-
-      section.classList.remove('hidden');
-    } catch (err: any) {
-      fetchError.textContent = err.message;
-      fetchError.classList.remove('hidden');
-    } finally {
-      loading.classList.add('hidden');
-      fetchBtn.disabled    = false;
-      fetchBtn.textContent = 'Fetch Product';
-    }
   });
 
   // Product form submit
-  document.getElementById('product-form')?.addEventListener('submit', async (e) => {
+  document.getElementById('product-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    const form    = e.target as HTMLFormElement;
-    const btn     = document.getElementById('submit-btn') as HTMLButtonElement;
-    const errorEl = document.getElementById('form-error')!;
-    const succEl  = document.getElementById('form-success')!;
+    var form    = e.target;
+    var btn     = document.getElementById('submit-btn');
+    var errorEl = document.getElementById('form-error');
+    var succEl  = document.getElementById('form-success');
 
     btn.disabled    = true;
-    btn.textContent = 'Savingâ€¦';
+    btn.textContent = 'Saving…';
     errorEl.classList.add('hidden');
 
-    try {
-      const data = new FormData(form);
-      const body = {
-        name:          data.get('name'),
-        slug:          data.get('slug'),
-        tagline:       data.get('tagline')       || '',
-        description:   data.get('description')   || '',
-        price:         parseFloat(data.get('price') as string),
-        compare_price: data.get('compare_price') ? parseFloat(data.get('compare_price') as string) : null,
-        stock:         parseInt(data.get('stock') as string, 10),
-        sku:           data.get('sku')           || null,
-        category:      data.get('category'),
-        is_featured:   data.has('is_featured'),
-        is_active:     data.has('is_active'),
-        features:      (data.get('features') as string || '').split('\n').map((f: string) => f.trim()).filter(Boolean),
-        images:        JSON.parse((data.get('images') as string) || '[]'),
-      };
+    var data = new FormData(form);
+    var body = {
+      name:          data.get('name'),
+      slug:          data.get('slug'),
+      tagline:       data.get('tagline')       || '',
+      description:   data.get('description')   || '',
+      price:         parseFloat(data.get('price')),
+      compare_price: data.get('compare_price') ? parseFloat(data.get('compare_price')) : null,
+      stock:         parseInt(data.get('stock'), 10),
+      sku:           data.get('sku')           || null,
+      category:      data.get('category'),
+      is_featured:   data.has('is_featured'),
+      is_active:     data.has('is_active'),
+      features:      (data.get('features') || '').split('\n').map(function (f) { return f.trim(); }).filter(Boolean),
+      images:        JSON.parse(data.get('images') || '[]'),
+    };
 
-      const res  = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const json = await res.json();
-
-      if (!res.ok || json.error) throw new Error(json.error || 'Failed to save product');
-
-      succEl.textContent = `Product "${json.name}" saved! Redirectingâ€¦`;
-      succEl.classList.remove('hidden');
-      setTimeout(() => window.location.href = '/admin', 1500);
-    } catch (err: any) {
-      errorEl.textContent = err.message;
-      errorEl.classList.remove('hidden');
-      btn.disabled    = false;
-      btn.textContent = 'Save to Store';
-    }
+    fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (res) { return res.json().then(function (json) { return { ok: res.ok, json: json }; }); })
+      .then(function (r) {
+        if (!r.ok || r.json.error) throw new Error(r.json.error || 'Failed to save product');
+        succEl.textContent = 'Product "' + r.json.name + '" saved! Redirecting…';
+        succEl.classList.remove('hidden');
+        setTimeout(function () { window.location.href = '/admin'; }, 1500);
+      })
+      .catch(function (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.remove('hidden');
+        btn.disabled    = false;
+        btn.textContent = 'Save to Store';
+      });
   });
+})();
 </script>
