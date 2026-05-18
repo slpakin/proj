@@ -253,39 +253,48 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
     })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (r) {
-        if (!r.ok || r.data.error) throw new Error(r.data.error || 'Failed to fetch product');
-        var data = r.data;
+        var data = r.data || {};
+        var blocked = !r.ok || data.error;
 
-        // Fill preview
+        if (blocked) {
+          fetchError.textContent = (data.error || 'Failed to fetch product') + ' — You can fill in the details manually below.';
+          fetchError.classList.remove('hidden');
+        }
+
+        // Fill preview only if we got data
         var firstImg = (data.images && data.images[0]) || '';
         previewImg.src = firstImg;
-        previewImg.style.display = firstImg ? '' : 'none';
+        previewImg.style.display = (firstImg && !blocked) ? '' : 'none';
         previewName.textContent  = data.name || '';
         previewPrice.textContent = data.price ? '$' + Number(data.price).toFixed(2) : '';
 
-        // Fill form
-        fName.value        = data.name        || '';
-        fTagline.value     = data.tagline      || '';
-        fDescription.value = data.description  || '';
-        fPrice.value       = data.price        ? String(data.price) : '';
+        // Fill form with whatever we got (may be empty if blocked)
+        fName.value        = data.name         || '';
+        fTagline.value     = data.tagline       || '';
+        fDescription.value = data.description   || '';
+        fPrice.value       = data.price         ? String(data.price) : '';
         fCompare.value     = data.compare_price ? String(data.compare_price) : '';
         fFeatures.value    = (data.features || []).join('\n');
         fImages.value      = JSON.stringify(data.images || []);
 
-        // Auto-generate slug
-        fSlug.dataset.manual = '';
-        fSlug.value = (data.name || '')
-          .toLowerCase()
-          .replace(/[^a-z0-9\s-]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-')
-          .slice(0, 60);
+        // Auto-generate slug if name present
+        if (data.name) {
+          fSlug.dataset.manual = '';
+          fSlug.value = data.name
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .slice(0, 60);
+        }
 
+        // Always show the form so user can fill manually
         section.classList.remove('hidden');
       })
       .catch(function (err) {
-        fetchError.textContent = err.message;
+        fetchError.textContent = err.message + ' — You can fill in the details manually below.';
         fetchError.classList.remove('hidden');
+        section.classList.remove('hidden');
       })
       .finally(function () {
         loading.classList.add('hidden');
