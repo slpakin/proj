@@ -8,7 +8,16 @@
       "Bash(git add *)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\claude_desk\\\\.claude\\\\worktrees\\\\happy-hugle-c41245\" -Force | Select-Object Name, @{Name=\"Type\"; Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}} | Format-Table -AutoSize)",
       "PowerShell(head -100)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\dashboard.astro'\\) -replace '^<script>$', '<script is:inline>' | Set-Content 'src\\\\pages\\\\dashboard.astro' -Encoding utf8\")",
+      "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\admin\\\\products\\\\new.astro'\\) -replace '^<script>$', '<script is:inline>' | Set-Content 'src\\\\pages\\\\admin\\\\products\\\\new.astro' -Encoding utf8\")",
+      "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\admin\\\\import.astro'\\) -replace '^<script>$', '<script is:inline>' | Set-Content 'src\\\\pages\\\\admin\\\\import.astro' -Encoding utf8\")",
+      "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\dashboard.astro'\\) -replace '^<script is:inline>$', '<script>' | Set-Content 'src\\\\pages\\\\dashboard.astro' -Encoding utf8\")",
+      "Bash(for f *)",
+      "Bash(grep -rn \"^<script>$\" \"C:\\\\claude_desk\\\\.claude\\\\worktrees\\\\happy-hugle-c41245\\\\src\" --include=\"*.astro\")"
     ]
   }
 }
