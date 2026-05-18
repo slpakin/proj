@@ -9,7 +9,7 @@ const { user } = await getSessionFromCookies(Astro.cookies);
 if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
 ---
 
-<StoreLayout title="Import from AliExpress â€” Nutries Admin">
+<StoreLayout title=”Import Product — Nutries Admin”>
   <StoreNav />
   <CartDrawer />
 
@@ -19,11 +19,11 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
     <nav class="flex items-center gap-2 text-sm text-nutries-grey-400 mb-6">
       <a href="/admin" class="hover:text-nutries-indigo-600">Admin</a>
       <span>/</span>
-      <span class="text-nutries-grey-700 font-medium">Import from AliExpress</span>
+      <span class="text-nutries-grey-700 font-medium">Import Product</span>
     </nav>
 
     <div class="flex items-center justify-between mb-8">
-      <h1 class="font-display text-3xl font-bold text-nutries-grey-900">Import from AliExpress</h1>
+      <h1 class="font-display text-3xl font-bold text-nutries-grey-900">Import Product</h1>
       <a href="/admin" class="text-sm text-nutries-grey-400 hover:text-nutries-indigo-600 font-medium transition-colors">
         &larr; Back to Admin
       </a>
@@ -32,13 +32,13 @@ if (!user || !isAdmin(user.email)) return Astro.redirect('/login');
     <!-- Fetch form -->
     <div class="bg-white rounded-2xl border border-nutries-grey-100 p-6 mb-8">
       <p class="text-nutries-grey-500 text-sm mb-4">
-        Paste any AliExpress product URL below. We'll extract the title, images, description and price automatically.
+        Paste any AliExpress, Alibaba, or Amazon product URL below. We'll extract the title, images, description and price automatically.
       </p>
       <div class="flex gap-3">
         <input
           id="ali-url"
           type="url"
-          placeholder="https://www.aliexpress.com/item/1234567890.html"
+          placeholder="https://www.aliexpress.com/item/…  or  amazon.com/dp/…"
           class="flex-1 px-4 py-3 rounded-xl border border-nutries-grey-200 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-indigo-300 transition"
         />
         <button
