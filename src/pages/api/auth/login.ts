@@ -33,5 +33,5 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   cookies.set('sb-access-token',  data.session.access_token,  { ...cookieOpts, maxAge: 60 * 60 * 24 * 7 });
   cookies.set('sb-refresh-token', data.session.refresh_token, { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
 
-  return redirect(isAdmin(data.user?.email) ? '/admin' : '/dashboard');
+  return redirect(isAdmin(data.user?.email) ? '/admin' : '/account');
 };

@@ -25,6 +25,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   cookies.set('sb-access-token',  access_token,  { ...cookieOpts, maxAge: 60 * 60 * 24 * 7 });
   cookies.set('sb-refresh-token', refresh_token, { ...cookieOpts, maxAge: 60 * 60 * 24 * 30 });
 
-  const redirect = isAdmin(data.session.user?.email) ? '/admin' : '/dashboard';
+  const redirect = isAdmin(data.session.user?.email) ? '/admin' : '/account';
   return new Response(JSON.stringify({ redirect }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 };
