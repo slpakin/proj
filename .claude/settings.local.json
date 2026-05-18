@@ -17,7 +17,11 @@
       "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\admin\\\\import.astro'\\) -replace '^<script>$', '<script is:inline>' | Set-Content 'src\\\\pages\\\\admin\\\\import.astro' -Encoding utf8\")",
       "Bash(powershell -Command \"\\(Get-Content 'src\\\\pages\\\\dashboard.astro'\\) -replace '^<script is:inline>$', '<script>' | Set-Content 'src\\\\pages\\\\dashboard.astro' -Encoding utf8\")",
       "Bash(for f *)",
-      "Bash(grep -rn \"^<script>$\" \"C:\\\\claude_desk\\\\.claude\\\\worktrees\\\\happy-hugle-c41245\\\\src\" --include=\"*.astro\")"
+      "Bash(grep -rn \"^<script>$\" \"C:\\\\claude_desk\\\\.claude\\\\worktrees\\\\happy-hugle-c41245\\\\src\" --include=\"*.astro\")",
+      "Bash(git commit -m 'Fix auth callback: remove CDN dependency, use is:inline to handle hash tokens directly *)",
+      "Bash(git commit -m 'Add /account page for customers, fix post-login redirects \\(admin→/admin, customer→/account\\) *)",
+      "Bash(powershell -Command \"\\(Get-Content 'src\\\\components\\\\Footer.astro'\\) -replace 'admin@akinsmedia\\\\.com', 'admin@nutries.ca' | Set-Content 'src\\\\components\\\\Footer.astro'\")",
+      "Bash(git commit -m 'Update admin email from akinsmedia.com to nutries.ca *)"
     ]
   }
 }
