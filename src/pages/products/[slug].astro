@@ -1,4 +1,4 @@
----
+﻿---
 import StoreLayout from '../../layouts/StoreLayout.astro';
 import StoreNav    from '../../components/store/StoreNav.astro';
 import CartDrawer  from '../../components/store/CartDrawer.astro';
@@ -260,7 +260,7 @@ const discount = product.compare_price
   <StoreFooter />
 </StoreLayout>
 
-<script>
+<script is:inline>
   let qty = 1;
   const qtyDisplay = document.getElementById('qty-display');
 

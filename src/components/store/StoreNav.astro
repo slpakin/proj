@@ -143,34 +143,38 @@ const currentPath = Astro.url.pathname;
 <!-- Spacer to push content below fixed nav (only when not transparent) -->
 {!transparent && <div class="h-[4.5rem]"></div>}
 
-<script>
-  // Scroll behaviour — turn transparent nav opaque on scroll
-  const nav = document.getElementById('store-nav');
-  if (nav && nav.classList.contains('bg-transparent')) {
-    const makeOpaque = () => {
-      if (window.scrollY > 60) {
-        nav.classList.replace('bg-transparent', 'bg-white/90');
-        nav.classList.add('backdrop-blur-md', 'border-b', 'border-nutries-grey-100', 'shadow-sm');
-        // Switch text colours
-        nav.querySelectorAll('.text-white').forEach(el => {
-          el.classList.replace('text-white', 'text-nutries-grey-700');
-        });
-        nav.querySelectorAll('.text-white\\/80').forEach(el => {
-          el.classList.remove('text-white/80');
-          el.classList.add('text-nutries-grey-600');
-        });
-      }
-    };
-    window.addEventListener('scroll', makeOpaque, { passive: true });
-  }
+<script is:inline>
+  (function () {
+    var nav = document.getElementById('store-nav');
+    if (nav && nav.classList.contains('bg-transparent')) {
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 60) {
+          nav.classList.replace('bg-transparent', 'bg-white/90');
+          nav.classList.add('backdrop-blur-md', 'border-b', 'border-nutries-grey-100', 'shadow-sm');
+          nav.querySelectorAll('.text-white').forEach(function (el) {
+            el.classList.replace('text-white', 'text-nutries-grey-700');
+          });
+          nav.querySelectorAll('.text-white\\/80').forEach(function (el) {
+            el.classList.remove('text-white/80');
+            el.classList.add('text-nutries-grey-600');
+          });
+        }
+      }, { passive: true });
+    }
 
-  // Mobile menu toggle
-  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu')?.classList.toggle('hidden');
-  });
+    var mobileBtn = document.getElementById('mobile-menu-btn');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', function () {
+        var menu = document.getElementById('mobile-menu');
+        if (menu) menu.classList.toggle('hidden');
+      });
+    }
 
-  // Open cart drawer
-  document.getElementById('cart-open-btn')?.addEventListener('click', () => {
-    document.dispatchEvent(new CustomEvent('cart:open'));
-  });
+    var cartBtn = document.getElementById('cart-open-btn');
+    if (cartBtn) {
+      cartBtn.addEventListener('click', function () {
+        document.dispatchEvent(new CustomEvent('cart:open'));
+      });
+    }
+  })();
 </script>

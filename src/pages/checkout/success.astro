@@ -1,4 +1,4 @@
----
+﻿---
 import StoreLayout from '../../layouts/StoreLayout.astro';
 import StoreNav    from '../../components/store/StoreNav.astro';
 import CartDrawer  from '../../components/store/CartDrawer.astro';
@@ -7,7 +7,7 @@ import StoreFooter from '../../components/store/StoreFooter.astro';
 const session_id = Astro.url.searchParams.get('session_id');
 ---
 
-<StoreLayout title="Order Confirmed — Nutries">
+<StoreLayout title="Order Confirmed â€” Nutries">
   <StoreNav />
   <CartDrawer />
 
@@ -24,7 +24,7 @@ const session_id = Astro.url.searchParams.get('session_id');
     </div>
 
     <h1 class="font-display text-4xl sm:text-5xl font-bold text-nutries-grey-900 mb-3">
-      Order Confirmed! 🎉
+      Order Confirmed! ðŸŽ‰
     </h1>
     <p class="text-nutries-grey-500 text-lg mb-4">
       Thank you for choosing Nutries. Your order is confirmed and being prepared.
@@ -41,10 +41,10 @@ const session_id = Astro.url.searchParams.get('session_id');
       <h2 class="font-bold text-nutries-grey-900 mb-4">What Happens Next?</h2>
       <div class="space-y-3">
         {[
-          { icon: '📧', label: 'Confirmation email',  desc: 'A receipt and order summary are heading to your inbox now.' },
-          { icon: '📦', label: 'Order processing',    desc: 'Your order is packed and dispatched within 1 business day.' },
-          { icon: '🚚', label: 'Shipping',            desc: 'Domestic: 2–4 business days. International: 5–10 business days.' },
-          { icon: '✅', label: 'Delivery',            desc: 'A tracking number will be emailed once your parcel ships.' },
+          { icon: 'ðŸ“§', label: 'Confirmation email',  desc: 'A receipt and order summary are heading to your inbox now.' },
+          { icon: 'ðŸ“¦', label: 'Order processing',    desc: 'Your order is packed and dispatched within 1 business day.' },
+          { icon: 'ðŸšš', label: 'Shipping',            desc: 'Domestic: 2â€“4 business days. International: 5â€“10 business days.' },
+          { icon: 'âœ…', label: 'Delivery',            desc: 'A tracking number will be emailed once your parcel ships.' },
         ].map(step => (
           <div class="flex items-start gap-3">
             <span class="text-xl mt-0.5">{step.icon}</span>
@@ -59,7 +59,7 @@ const session_id = Astro.url.searchParams.get('session_id');
 
     <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
       <a href="/products" class="px-8 py-3.5 rounded-2xl bg-btn-indigo text-white font-bold text-sm hover:shadow-glow-i transition-all">
-        Continue Shopping →
+        Continue Shopping â†’
       </a>
       <a href="/" class="px-8 py-3.5 rounded-2xl border border-nutries-grey-200 text-nutries-grey-600 font-semibold text-sm hover:bg-nutries-grey-50 transition-all">
         Back to Home
@@ -70,7 +70,7 @@ const session_id = Astro.url.searchParams.get('session_id');
   <StoreFooter />
 </StoreLayout>
 
-<script>
+<script is:inline>
   // Clear cart on successful payment
   window.NutriesCart?.clear();
 </script>

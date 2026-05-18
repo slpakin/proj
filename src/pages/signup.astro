@@ -4,9 +4,6 @@ import { getSessionFromCookies, isAdmin } from '../lib/supabase';
 
 const { user } = await getSessionFromCookies(Astro.cookies);
 if (user) return Astro.redirect(isAdmin(user.email) ? '/admin' : '/dashboard');
-
-const supabaseUrl     = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 ---
 
 <StoreLayout title="Create Account — Nutries">
@@ -75,9 +72,8 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
         <p class="text-nutries-grey-400 text-sm mb-8">Free to join. No credit card needed.</p>
 
         <!-- Google Sign In -->
-        <button
-          id="google-btn"
-          type="button"
+        <a
+          href="/api/auth/google"
           class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white border border-nutries-grey-200 rounded-xl text-nutries-grey-700 font-semibold text-sm hover:bg-nutries-grey-50 hover:shadow-sm transition-all mb-6"
         >
           <svg class="w-5 h-5" viewBox="0 0 24 24">
@@ -87,7 +83,7 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
           Sign up with Google
-        </button>
+        </a>
 
         <!-- Divider -->
         <div class="flex items-center gap-3 mb-6">
@@ -151,46 +147,33 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
   </div>
 </StoreLayout>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script define:vars={{ supabaseUrl, supabaseAnonKey }}>
-  const { createClient } = window.supabase;
-  const sb = createClient(supabaseUrl, supabaseAnonKey);
-  const origin = window.location.origin;
+<script is:inline>
+  (function () {
+    var form = document.getElementById('signup-form');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var submitBtn = document.getElementById('submit-btn');
+      var errBox    = document.getElementById('form-error');
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Creating account…';
 
-  // Google OAuth
-  document.getElementById('google-btn')?.addEventListener('click', async () => {
-    await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: origin + '/auth/callback' },
+      fetch('/api/auth/signup', { method: 'POST', body: new FormData(form) })
+        .then(function (res) {
+          if (res.redirected) { window.location.href = res.url; return; }
+          return res.json().then(function (data) {
+            submitBtn.disabled    = false;
+            submitBtn.textContent = 'Create Account';
+            errBox.textContent    = data.error || 'Signup failed. Please try again.';
+            errBox.classList.remove('hidden');
+          });
+        })
+        .catch(function () {
+          submitBtn.disabled    = false;
+          submitBtn.textContent = 'Create Account';
+          errBox.textContent    = 'Network error. Please try again.';
+          errBox.classList.remove('hidden');
+        });
     });
-  });
-
-  // Signup form
-  const form = document.getElementById('signup-form');
-  const submitBtn = document.getElementById('submit-btn');
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Creating account…';
-
-    const formData = new FormData(form);
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (res.redirected) {
-      window.location.href = res.url;
-      return;
-    }
-
-    const data = await res.json().catch(() => ({ error: 'Unexpected error' }));
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Create Account';
-
-    const errBox = document.getElementById('form-error');
-    errBox.textContent = data.error ?? 'Signup failed. Please try again.';
-    errBox.classList.remove('hidden');
-  });
+  })();
 </script>

@@ -12,19 +12,44 @@ const year = new Date().getFullYear();
           <h3 class="font-display text-2xl font-bold text-white mb-1">Freshness tips, recipes &amp; member-only offers</h3>
           <p class="text-white/50 text-sm">Joined by 12,000+ home cooks in 40+ countries. One email per week, unsubscribe instantly.</p>
         </div>
-        <form class="flex w-full sm:w-auto gap-2" onsubmit="return false;">
+        <form id="subscribe-form" class="flex w-full sm:w-auto gap-2">
           <input
+            id="subscribe-email"
             type="email"
             placeholder="you@email.com"
+            required
             class="flex-1 sm:w-64 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-nutries-green-400 focus:border-transparent transition"
           />
           <button
+            id="subscribe-btn"
             type="submit"
             class="px-5 py-3 rounded-xl bg-btn-green text-white text-sm font-semibold hover:shadow-glow-g transition-all duration-200 whitespace-nowrap"
           >
             Subscribe
           </button>
         </form>
+
+        <script is:inline>
+          (function () {
+            var form = document.getElementById('subscribe-form');
+            if (!form) return;
+            form.addEventListener('submit', function (e) {
+              e.preventDefault();
+              var emailInput = document.getElementById('subscribe-email');
+              var btn        = document.getElementById('subscribe-btn');
+              if (!emailInput.value.trim()) return;
+              btn.disabled    = true;
+              btn.textContent = '✓ Subscribed!';
+              btn.style.background = '#15803d';
+              emailInput.value = '';
+              setTimeout(function () {
+                btn.disabled    = false;
+                btn.textContent = 'Subscribe';
+                btn.style.background = '';
+              }, 4000);
+            });
+          })();
+        </script>
       </div>
     </div>
   </div>

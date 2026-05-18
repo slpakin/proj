@@ -1,4 +1,4 @@
----
+﻿---
 interface Props {
   id: string;
   slug: string;
@@ -71,7 +71,7 @@ const inStock   = stock > 0;
     <!-- Stars (static for seeded products) -->
     <div class="flex items-center gap-1.5 mb-3">
       <div class="flex gap-0.5 text-nutries-brown-400">
-        {'★★★★★'.split('').map(() => <span>★</span>)}
+        {'â˜…â˜…â˜…â˜…â˜…'.split('').map(() => <span>â˜…</span>)}
       </div>
       <span class="text-xs text-nutries-grey-400 font-medium">4.9 (127)</span>
     </div>
@@ -112,7 +112,7 @@ const inStock   = stock > 0;
   </div>
 </div>
 
-<script>
+<script is:inline>
   document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
     btn.addEventListener('click', () => {
       const el = btn as HTMLButtonElement;
@@ -125,7 +125,7 @@ const inStock   = stock > 0;
         qty:   1,
       });
       // Feedback animation
-      el.textContent = '✓ Added!';
+      el.textContent = 'âœ“ Added!';
       el.classList.add('bg-nutries-green-600');
       setTimeout(() => {
         el.textContent = 'Add to Cart';

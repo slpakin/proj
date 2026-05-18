@@ -1,4 +1,4 @@
----
+﻿---
 interface Props {
   user?: { email?: string } | null;
 }
@@ -73,7 +73,7 @@ const { user } = Astro.props;
   </div>
 </header>
 
-<script>
+<script is:inline>
   const btn       = document.getElementById('menu-btn')!;
   const menu      = document.getElementById('mobile-menu')!;
   const iconOpen  = document.getElementById('menu-icon-open')!;

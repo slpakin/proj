@@ -44,69 +44,68 @@ const {
     <slot />
 
     <!-- Global cart state manager -->
-    <script>
-      // Cart module — single source of truth
-      const CART_KEY = 'nutries-cart';
+    <script is:inline>
+      (function () {
+        var CART_KEY = 'nutries-cart';
 
-      function loadCart() {
-        try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
-        catch { return []; }
-      }
+        function loadCart() {
+          try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+          catch (e) { return []; }
+        }
 
-      function saveCart(cart) {
-        localStorage.setItem(CART_KEY, JSON.stringify(cart));
-        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart } }));
-      }
+        function saveCart(cart) {
+          try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+        }
 
-      window.NutriesCart = {
-        get() { return loadCart(); },
+        window.NutriesCart = {
+          get: function () { return loadCart(); },
 
-        add(item) {
-          const cart = loadCart();
-          const idx  = cart.findIndex(i => i.id === item.id);
-          if (idx >= 0) {
-            cart[idx].qty = Math.min(cart[idx].qty + (item.qty || 1), 99);
-          } else {
-            cart.push({ ...item, qty: item.qty || 1 });
-          }
-          saveCart(cart);
-        },
+          add: function (item) {
+            var cart = loadCart();
+            var idx  = cart.findIndex(function (i) { return i.id === item.id; });
+            if (idx >= 0) {
+              cart[idx].qty = Math.min(cart[idx].qty + (item.qty || 1), 99);
+            } else {
+              cart.push(Object.assign({}, item, { qty: item.qty || 1 }));
+            }
+            saveCart(cart);
+          },
 
-        remove(id) {
-          saveCart(loadCart().filter(i => i.id !== id));
-        },
+          remove: function (id) {
+            saveCart(loadCart().filter(function (i) { return i.id !== id; }));
+          },
 
-        updateQty(id, qty) {
-          if (qty < 1) { this.remove(id); return; }
-          const cart = loadCart();
-          const idx  = cart.findIndex(i => i.id === id);
-          if (idx >= 0) { cart[idx].qty = Math.min(qty, 99); saveCart(cart); }
-        },
+          updateQty: function (id, qty) {
+            if (qty < 1) { this.remove(id); return; }
+            var cart = loadCart();
+            var idx  = cart.findIndex(function (i) { return i.id === id; });
+            if (idx >= 0) { cart[idx].qty = Math.min(qty, 99); saveCart(cart); }
+          },
 
-        clear() { saveCart([]); },
+          clear: function () { saveCart([]); },
 
-        count() { return loadCart().reduce((s, i) => s + i.qty, 0); },
+          count: function () { return loadCart().reduce(function (s, i) { return s + i.qty; }, 0); },
 
-        total() {
-          return loadCart().reduce((s, i) => s + i.price * i.qty, 0).toFixed(2);
-        },
-      };
+          total: function () {
+            return loadCart().reduce(function (s, i) { return s + i.price * i.qty; }, 0).toFixed(2);
+          },
+        };
 
-      // Update all cart count badges on every change
-      document.addEventListener('cart:updated', () => {
-        const count = window.NutriesCart.count();
-        document.querySelectorAll('[data-cart-count]').forEach(el => {
-          el.textContent = count;
-          el.classList.toggle('hidden', count === 0);
+        document.addEventListener('cart:updated', function () {
+          var count = window.NutriesCart.count();
+          document.querySelectorAll('[data-cart-count]').forEach(function (el) {
+            el.textContent = count;
+            el.classList.toggle('hidden', count === 0);
+          });
         });
-      });
 
-      // Fire once on load to hydrate counts
-      document.addEventListener('DOMContentLoaded', () => {
-        document.dispatchEvent(new CustomEvent('cart:updated', {
-          detail: { cart: window.NutriesCart.get() }
-        }));
-      });
+        document.addEventListener('DOMContentLoaded', function () {
+          document.dispatchEvent(new CustomEvent('cart:updated', {
+            detail: { cart: window.NutriesCart.get() }
+          }));
+        });
+      })();
     </script>
   </body>
 </html>

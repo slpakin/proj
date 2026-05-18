@@ -1,11 +1,11 @@
----
+﻿---
 import StoreLayout from '../layouts/StoreLayout.astro';
 import StoreNav    from '../components/store/StoreNav.astro';
 import CartDrawer  from '../components/store/CartDrawer.astro';
 import StoreFooter from '../components/store/StoreFooter.astro';
 ---
 
-<StoreLayout title="Your Cart — Nutries">
+<StoreLayout title="Your Cart â€” Nutries">
   <StoreNav />
   <CartDrawer />
 
@@ -13,7 +13,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
 
     <div class="flex items-center justify-between mb-8">
       <h1 class="font-display text-3xl sm:text-4xl font-bold text-nutries-grey-900">Your Cart</h1>
-      <a href="/products" class="text-nutries-indigo-600 text-sm font-medium hover:underline">← Continue Shopping</a>
+      <a href="/products" class="text-nutries-indigo-600 text-sm font-medium hover:underline">â† Continue Shopping</a>
     </div>
 
     <!-- Empty state -->
@@ -27,7 +27,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
       <h2 class="text-xl font-bold text-nutries-grey-700 mb-2">Your cart is empty</h2>
       <p class="text-nutries-grey-400 text-sm mb-6">Looks like you haven't added anything yet.</p>
       <a href="/products" class="px-6 py-3 rounded-xl bg-btn-indigo text-white font-semibold text-sm hover:shadow-glow-i transition-all">
-        Start Shopping →
+        Start Shopping â†’
       </a>
     </div>
 
@@ -92,7 +92,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
               href="/checkout"
               class="block w-full text-center py-4 rounded-2xl bg-btn-red text-white font-bold text-base hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5"
             >
-              Proceed to Checkout →
+              Proceed to Checkout â†’
             </a>
 
             <!-- Trust marks -->
@@ -112,7 +112,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
   <StoreFooter />
 </StoreLayout>
 
-<script>
+<script is:inline>
   const FREE_SHIP = 75;
 
   function renderPageCart() {
@@ -145,7 +145,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
     if (countEl)    countEl.textContent    = String(count);
 
     const shipping = total >= FREE_SHIP ? 0 : 7.99;
-    if (shipEl)   shipEl.textContent = shipping === 0 ? '🎉 FREE' : `$${shipping.toFixed(2)}`;
+    if (shipEl)   shipEl.textContent = shipping === 0 ? 'ðŸŽ‰ FREE' : `$${shipping.toFixed(2)}`;
     if (totalEl)  totalEl.textContent = `$${(total + shipping).toFixed(2)}`;
 
     const pct = Math.min((total / FREE_SHIP) * 100, 100);
@@ -153,7 +153,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
     if (shipMsgEl) {
       const diff = Math.max(FREE_SHIP - total, 0);
       shipMsgEl.innerHTML = diff <= 0
-        ? '🎉 <strong>Free shipping unlocked!</strong>'
+        ? 'ðŸŽ‰ <strong>Free shipping unlocked!</strong>'
         : `Add <strong>$${diff.toFixed(2)}</strong> for free shipping`;
     }
 
@@ -173,7 +173,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
           <a href="/products/${item.slug}" class="font-semibold text-nutries-grey-900 text-sm hover:text-nutries-indigo-700 transition-colors line-clamp-2">${item.name}</a>
           <p class="text-nutries-indigo-600 font-bold text-sm mt-1">$${item.price.toFixed(2)} each</p>
           <div class="flex items-center gap-2 mt-3">
-            <button data-action="dec" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors font-bold text-lg">−</button>
+            <button data-action="dec" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors font-bold text-lg">âˆ’</button>
             <span class="w-8 text-center font-bold text-nutries-grey-900">${item.qty}</span>
             <button data-action="inc" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors font-bold text-lg">+</button>
             <span class="ml-auto text-base font-bold text-nutries-grey-900">$${(item.price * item.qty).toFixed(2)}</span>

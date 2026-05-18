@@ -95,146 +95,130 @@
   </div>
 </aside>
 
-<script>
-  const overlay    = document.getElementById('cart-overlay');
-  const drawer     = document.getElementById('cart-drawer');
-  const itemsList  = document.getElementById('cart-items-list');
-  const emptyState = document.getElementById('cart-empty-state');
-  const footer     = document.getElementById('cart-footer');
-  const drawerCount   = document.getElementById('drawer-count');
-  const drawerSubtotal = document.getElementById('drawer-subtotal');
-  const shippingBar    = document.getElementById('shipping-bar');
-  const shippingDiff   = document.getElementById('shipping-diff');
-  const shippingMsg    = document.getElementById('shipping-msg');
+<script is:inline>
+  (function () {
+    var overlay      = document.getElementById('cart-overlay');
+    var drawer       = document.getElementById('cart-drawer');
+    var itemsList    = document.getElementById('cart-items-list');
+    var emptyState   = document.getElementById('cart-empty-state');
+    var footer       = document.getElementById('cart-footer');
+    var drawerCount  = document.getElementById('drawer-count');
+    var drawerSub    = document.getElementById('drawer-subtotal');
+    var shippingBar  = document.getElementById('shipping-bar');
+    var shippingMsg  = document.getElementById('shipping-msg');
+    var THRESHOLD    = 75;
 
-  const FREE_SHIPPING_THRESHOLD = 75;
-
-  function openCart() {
-    overlay?.classList.remove('hidden');
-    requestAnimationFrame(() => {
-      overlay?.classList.replace('opacity-0', 'opacity-100');
-      drawer?.classList.replace('translate-x-full', 'translate-x-0');
-    });
-    document.body.style.overflow = 'hidden';
-    renderCart();
-  }
-
-  function closeCart() {
-    overlay?.classList.replace('opacity-100', 'opacity-0');
-    drawer?.classList.replace('translate-x-0', 'translate-x-full');
-    setTimeout(() => {
-      overlay?.classList.add('hidden');
-      document.body.style.overflow = '';
-    }, 350);
-  }
-
-  function renderCart() {
-    const cart  = window.NutriesCart?.get() || [];
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const count = cart.reduce((s, i) => s + i.qty, 0);
-
-    // Count badge
-    if (drawerCount) drawerCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-
-    // Subtotal
-    if (drawerSubtotal) drawerSubtotal.textContent = `$${total.toFixed(2)}`;
-
-    // Shipping progress
-    const pct = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
-    if (shippingBar) shippingBar.style.width = `${pct}%`;
-    if (shippingDiff && shippingMsg) {
-      const diff = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
-      if (diff <= 0) {
-        shippingMsg.innerHTML = '🎉 <strong>You\'ve unlocked free shipping!</strong>';
-      } else {
-        shippingMsg.innerHTML = `Add <strong>$${diff.toFixed(2)}</strong> more for free shipping!`;
-      }
+    function openCart() {
+      if (overlay) overlay.classList.remove('hidden');
+      requestAnimationFrame(function () {
+        if (overlay) overlay.classList.replace('opacity-0', 'opacity-100');
+        if (drawer)  drawer.classList.replace('translate-x-full', 'translate-x-0');
+      });
+      document.body.style.overflow = 'hidden';
+      renderCart();
     }
 
-    // Empty state
-    if (cart.length === 0) {
-      emptyState?.classList.remove('hidden');
-      emptyState?.classList.add('flex');
-      footer?.classList.add('hidden');
-      // Clear item rows
-      const rows = itemsList?.querySelectorAll('[data-cart-item]');
-      rows?.forEach(r => r.remove());
-      return;
+    function closeCart() {
+      if (overlay) overlay.classList.replace('opacity-100', 'opacity-0');
+      if (drawer)  drawer.classList.replace('translate-x-0', 'translate-x-full');
+      setTimeout(function () {
+        if (overlay) overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 350);
     }
 
-    emptyState?.classList.add('hidden');
-    emptyState?.classList.remove('flex');
-    footer?.classList.remove('hidden');
+    function renderCart() {
+      var cart  = (window.NutriesCart && window.NutriesCart.get()) || [];
+      var total = cart.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
+      var count = cart.reduce(function (s, i) { return s + i.qty; }, 0);
 
-    // Render rows
-    const existing = new Set(Array.from(itemsList?.querySelectorAll('[data-cart-item]') || []).map(el => el.dataset.cartItem));
-    const current  = new Set(cart.map(i => i.id));
+      if (drawerCount) drawerCount.textContent = count + ' item' + (count !== 1 ? 's' : '');
+      if (drawerSub)   drawerSub.textContent   = '$' + total.toFixed(2);
 
-    // Remove rows no longer in cart
-    existing.forEach(id => {
-      if (!current.has(id)) itemsList?.querySelector(`[data-cart-item="${id}"]`)?.remove();
-    });
-
-    // Add or update rows
-    cart.forEach(item => {
-      let row = itemsList?.querySelector(`[data-cart-item="${item.id}"]`);
-      if (!row) {
-        const div = document.createElement('div');
-        div.dataset.cartItem = item.id;
-        div.className = 'flex gap-4 items-start bg-nutries-grey-50 rounded-2xl p-3 border border-nutries-grey-100';
-        div.innerHTML = `
-          <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-nutries-indigo-100 to-nutries-green-100 flex-shrink-0 overflow-hidden">
-            <img src="${item.image || '/images/product-placeholder.svg'}" alt="${item.name}" class="w-full h-full object-cover"/>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-nutries-grey-900 leading-tight line-clamp-2">${item.name}</p>
-            <p class="text-nutries-indigo-600 font-bold text-sm mt-1">$${(item.price).toFixed(2)}</p>
-            <div class="flex items-center gap-2 mt-2">
-              <button data-action="dec" data-id="${item.id}" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors text-lg leading-none font-bold">−</button>
-              <span class="w-6 text-center text-sm font-bold text-nutries-grey-800" data-qty>${item.qty}</span>
-              <button data-action="inc" data-id="${item.id}" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors text-lg leading-none font-bold">+</button>
-            </div>
-          </div>
-          <div class="flex flex-col items-end gap-2">
-            <p class="text-sm font-bold text-nutries-grey-900 whitespace-nowrap" data-line-total>$${(item.price * item.qty).toFixed(2)}</p>
-            <button data-action="remove" data-id="${item.id}" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors" aria-label="Remove">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>`;
-        itemsList?.appendChild(div);
-        row = div;
-      } else {
-        // Update qty and line total
-        const qtyEl      = row.querySelector('[data-qty]');
-        const lineTotEl  = row.querySelector('[data-line-total]');
-        if (qtyEl)     qtyEl.textContent     = String(item.qty);
-        if (lineTotEl) lineTotEl.textContent = `$${(item.price * item.qty).toFixed(2)}`;
+      var pct = Math.min((total / THRESHOLD) * 100, 100);
+      if (shippingBar) shippingBar.style.width = pct + '%';
+      if (shippingMsg) {
+        var diff = Math.max(THRESHOLD - total, 0);
+        shippingMsg.innerHTML = diff <= 0
+          ? '🎉 <strong>You\'ve unlocked free shipping!</strong>'
+          : 'Add <strong>$' + diff.toFixed(2) + '</strong> more for free shipping!';
       }
-    });
-  }
 
-  // Event delegation for qty controls
-  itemsList?.addEventListener('click', e => {
-    const btn    = (e.target as Element).closest('[data-action]') as HTMLElement | null;
-    if (!btn) return;
-    const action = btn.dataset.action;
-    const id     = btn.dataset.id;
-    if (!id) return;
-    const cart = window.NutriesCart?.get() || [];
-    const item = cart.find((i: any) => i.id === id);
-    if (action === 'inc')    window.NutriesCart?.updateQty(id, (item?.qty || 0) + 1);
-    if (action === 'dec')    window.NutriesCart?.updateQty(id, (item?.qty || 1) - 1);
-    if (action === 'remove') window.NutriesCart?.remove(id);
-    renderCart();
-  });
+      if (cart.length === 0) {
+        if (emptyState) { emptyState.classList.remove('hidden'); emptyState.classList.add('flex'); }
+        if (footer)     footer.classList.add('hidden');
+        if (itemsList)  itemsList.querySelectorAll('[data-cart-item]').forEach(function (r) { r.remove(); });
+        return;
+      }
 
-  // Open / close listeners
-  document.addEventListener('cart:open', openCart);
-  document.addEventListener('cart:updated', renderCart);
-  overlay?.addEventListener('click', closeCart);
-  document.getElementById('cart-close-btn')?.addEventListener('click', closeCart);
-  document.getElementById('cart-close-btn-2')?.addEventListener('click', closeCart);
+      if (emptyState) { emptyState.classList.add('hidden'); emptyState.classList.remove('flex'); }
+      if (footer)     footer.classList.remove('hidden');
 
-  // Keyboard close
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+      var existing = new Set(Array.from((itemsList && itemsList.querySelectorAll('[data-cart-item]')) || []).map(function (el) { return el.dataset.cartItem; }));
+      var current  = new Set(cart.map(function (i) { return i.id; }));
+
+      existing.forEach(function (id) {
+        if (!current.has(id) && itemsList) {
+          var el = itemsList.querySelector('[data-cart-item="' + id + '"]');
+          if (el) el.remove();
+        }
+      });
+
+      cart.forEach(function (item) {
+        var row = itemsList && itemsList.querySelector('[data-cart-item="' + item.id + '"]');
+        if (!row) {
+          var div = document.createElement('div');
+          div.dataset.cartItem = item.id;
+          div.className = 'flex gap-4 items-start bg-nutries-grey-50 rounded-2xl p-3 border border-nutries-grey-100';
+          div.innerHTML = '<div class="w-16 h-16 rounded-xl bg-gradient-to-br from-nutries-indigo-100 to-nutries-green-100 flex-shrink-0 overflow-hidden">'
+            + '<img src="' + (item.image || '/images/product-placeholder.svg') + '" alt="' + item.name + '" class="w-full h-full object-cover"/>'
+            + '</div>'
+            + '<div class="flex-1 min-w-0">'
+            + '<p class="text-sm font-semibold text-nutries-grey-900 leading-tight line-clamp-2">' + item.name + '</p>'
+            + '<p class="text-nutries-indigo-600 font-bold text-sm mt-1">$' + item.price.toFixed(2) + '</p>'
+            + '<div class="flex items-center gap-2 mt-2">'
+            + '<button data-action="dec" data-id="' + item.id + '" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors text-lg leading-none font-bold">−</button>'
+            + '<span class="w-6 text-center text-sm font-bold text-nutries-grey-800" data-qty>' + item.qty + '</span>'
+            + '<button data-action="inc" data-id="' + item.id + '" class="w-7 h-7 rounded-full bg-white border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors text-lg leading-none font-bold">+</button>'
+            + '</div></div>'
+            + '<div class="flex flex-col items-end gap-2">'
+            + '<p class="text-sm font-bold text-nutries-grey-900 whitespace-nowrap" data-line-total>$' + (item.price * item.qty).toFixed(2) + '</p>'
+            + '<button data-action="remove" data-id="' + item.id + '" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors" aria-label="Remove">'
+            + '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>'
+            + '</button></div>';
+          if (itemsList) itemsList.appendChild(div);
+        } else {
+          var qtyEl     = row.querySelector('[data-qty]');
+          var lineEl    = row.querySelector('[data-line-total]');
+          if (qtyEl)  qtyEl.textContent  = String(item.qty);
+          if (lineEl) lineEl.textContent = '$' + (item.price * item.qty).toFixed(2);
+        }
+      });
+    }
+
+    if (itemsList) {
+      itemsList.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        var action = btn.dataset.action;
+        var id     = btn.dataset.id;
+        if (!id || !window.NutriesCart) return;
+        var cart = window.NutriesCart.get();
+        var item = cart.find(function (i) { return i.id === id; });
+        if (action === 'inc')    window.NutriesCart.updateQty(id, (item ? item.qty : 0) + 1);
+        if (action === 'dec')    window.NutriesCart.updateQty(id, (item ? item.qty : 1) - 1);
+        if (action === 'remove') window.NutriesCart.remove(id);
+        renderCart();
+      });
+    }
+
+    document.addEventListener('cart:open',    openCart);
+    document.addEventListener('cart:updated', renderCart);
+    if (overlay) overlay.addEventListener('click', closeCart);
+    var closeBtn  = document.getElementById('cart-close-btn');
+    var closeBtn2 = document.getElementById('cart-close-btn-2');
+    if (closeBtn)  closeBtn.addEventListener('click',  closeCart);
+    if (closeBtn2) closeBtn2.addEventListener('click', closeCart);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCart(); });
+  })();
 </script>

@@ -130,102 +130,93 @@ import StoreFooter from '../components/store/StoreFooter.astro';
   <StoreFooter />
 </StoreLayout>
 
-<script>
-  function renderCheckout() {
-    const cart   = window.NutriesCart?.get() || [];
-    const total  = parseFloat(window.NutriesCart?.total() || '0');
-    const count  = window.NutriesCart?.count() || 0;
+<script is:inline>
+  (function () {
+    function renderCheckout() {
+      var cart     = (window.NutriesCart && window.NutriesCart.get()) || [];
+      var total    = parseFloat((window.NutriesCart && window.NutriesCart.total()) || '0');
+      var emptyEl  = document.getElementById('checkout-empty');
+      var contentEl = document.getElementById('checkout-content');
 
-    const emptyEl   = document.getElementById('checkout-empty');
-    const contentEl = document.getElementById('checkout-content');
+      if (cart.length === 0) {
+        if (emptyEl)   { emptyEl.classList.remove('hidden'); emptyEl.classList.add('flex'); }
+        if (contentEl)   contentEl.classList.add('hidden');
+        return;
+      }
 
-    if (cart.length === 0) {
-      emptyEl?.classList.remove('hidden');
-      emptyEl?.classList.add('flex');
-      contentEl?.classList.add('hidden');
-      return;
+      if (emptyEl)   { emptyEl.classList.add('hidden'); emptyEl.classList.remove('flex'); }
+      if (contentEl)   contentEl.classList.remove('hidden');
+
+      var shipping   = total >= 75 ? 0 : 7.99;
+      var subtotalEl = document.getElementById('co-subtotal');
+      var shippingEl = document.getElementById('co-shipping');
+      var totalEl    = document.getElementById('co-total');
+      if (subtotalEl) subtotalEl.textContent = '$' + total.toFixed(2);
+      if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2);
+      if (totalEl)    totalEl.textContent    = '$' + (total + shipping).toFixed(2);
+
+      var itemsEl = document.getElementById('checkout-items');
+      if (itemsEl) {
+        itemsEl.innerHTML = cart.map(function (item) {
+          return '<div class="flex items-center gap-3">'
+            + '<div class="w-12 h-12 rounded-lg bg-nutries-grey-100 overflow-hidden flex-shrink-0">'
+            + '<img src="' + item.image + '" class="w-full h-full object-contain p-1" alt="' + item.name + '"/>'
+            + '</div>'
+            + '<div class="flex-1 min-w-0">'
+            + '<p class="text-xs font-medium text-nutries-grey-800 line-clamp-1">' + item.name + '</p>'
+            + '<p class="text-xs text-nutries-grey-400">Qty: ' + item.qty + '</p>'
+            + '</div>'
+            + '<span class="text-xs font-bold text-nutries-grey-900">$' + (item.price * item.qty).toFixed(2) + '</span>'
+            + '</div>';
+        }).join('');
+      }
     }
 
-    emptyEl?.classList.add('hidden');
-    emptyEl?.classList.remove('flex');
-    contentEl?.classList.remove('hidden');
+    document.addEventListener('DOMContentLoaded', renderCheckout);
 
-    // Summary
-    const shipping = total >= 75 ? 0 : 7.99;
-    const subtotalEl  = document.getElementById('co-subtotal');
-    const shippingEl  = document.getElementById('co-shipping');
-    const totalEl     = document.getElementById('co-total');
-    if (subtotalEl)  subtotalEl.textContent = `$${total.toFixed(2)}`;
-    if (shippingEl)  shippingEl.textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
-    if (totalEl)     totalEl.textContent    = `$${(total + shipping).toFixed(2)}`;
+    var checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var payBtn  = document.getElementById('pay-btn');
+        var labelEl = document.getElementById('pay-btn-label');
+        var errorEl = document.getElementById('checkout-error');
+        var formData = new FormData(checkoutForm);
 
-    // Items
-    const itemsEl = document.getElementById('checkout-items');
-    if (itemsEl) {
-      itemsEl.innerHTML = cart.map((item: any) => `
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-lg bg-nutries-grey-100 overflow-hidden flex-shrink-0">
-            <img src="${item.image}" class="w-full h-full object-contain p-1" alt="${item.name}"/>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-medium text-nutries-grey-800 line-clamp-1">${item.name}</p>
-            <p class="text-xs text-nutries-grey-400">Qty: ${item.qty}</p>
-          </div>
-          <span class="text-xs font-bold text-nutries-grey-900">$${(item.price * item.qty).toFixed(2)}</span>
-        </div>`).join('');
-    }
-  }
+        if (labelEl) labelEl.textContent = 'Redirecting to payment…';
+        if (payBtn)  payBtn.disabled = true;
+        if (errorEl) errorEl.classList.add('hidden');
 
-  document.addEventListener('DOMContentLoaded', renderCheckout);
+        var cart = (window.NutriesCart && window.NutriesCart.get()) || [];
 
-  // Form submission → create Stripe session
-  document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form     = e.target as HTMLFormElement;
-    const payBtn   = document.getElementById('pay-btn') as HTMLButtonElement;
-    const labelEl  = document.getElementById('pay-btn-label');
-    const errorEl  = document.getElementById('checkout-error');
-
-    if (labelEl)  labelEl.textContent = 'Redirecting to payment…';
-    if (payBtn)   { payBtn.disabled = true; }
-    if (errorEl)  errorEl.classList.add('hidden');
-
-    try {
-      const cart     = window.NutriesCart?.get() || [];
-      const formData = new FormData(form);
-
-      const res = await fetch('/api/checkout/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cart,
-          customer: {
-            name:    `${formData.get('firstName')} ${formData.get('lastName')}`.trim(),
-            email:   formData.get('email'),
-            address: formData.get('address'),
-            city:    formData.get('city'),
-            state:   formData.get('state'),
-            zip:     formData.get('zip'),
-          },
-        }),
+        fetch('/api/checkout/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cart: cart,
+            customer: {
+              name:    (formData.get('firstName') + ' ' + formData.get('lastName')).trim(),
+              email:   formData.get('email'),
+              address: formData.get('address'),
+              city:    formData.get('city'),
+              state:   formData.get('state'),
+              zip:     formData.get('zip'),
+            },
+          }),
+        })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (result) {
+            if (!result.ok || result.data.error) {
+              throw new Error(result.data.error || 'Checkout failed. Please try again.');
+            }
+            if (result.data.url) window.location.href = result.data.url;
+          })
+          .catch(function (err) {
+            if (errorEl) { errorEl.textContent = err.message || 'Something went wrong.'; errorEl.classList.remove('hidden'); }
+            if (labelEl) labelEl.textContent = 'Continue to Payment →';
+            if (payBtn)  payBtn.disabled = false;
+          });
       });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Checkout failed. Please try again.');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err: any) {
-      if (errorEl) {
-        errorEl.textContent = err.message || 'Something went wrong.';
-        errorEl.classList.remove('hidden');
-      }
-      if (labelEl) labelEl.textContent = 'Continue to Payment →';
-      if (payBtn)  payBtn.disabled = false;
     }
-  });
+  })();
 </script>
