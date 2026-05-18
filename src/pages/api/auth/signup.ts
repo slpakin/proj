@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   // Notify admin via Resend (optional — skipped when RESEND_API_KEY is not set)
   const resendKey = import.meta.env.RESEND_API_KEY;
-  const adminEmail = import.meta.env.ADMIN_EMAIL ?? 'admin@akinsmedia.com';
+  const adminEmail = import.meta.env.ADMIN_EMAIL ?? 'admin@nutries.ca';
   if (resendKey) {
     fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
         Authorization: `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
-        from: 'AkinsMedia <noreply@akinsmedia.com>',
+        from: 'Nutries <noreply@nutries.ca>',
         to: [adminEmail],
         subject: 'New User Registration — AkinsMedia',
         html: `
