@@ -128,9 +128,8 @@ import StoreFooter from '../components/store/StoreFooter.astro';
   </main>
 
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
+  <script is:inline>
   (function () {
     function renderCheckout() {
       var cart     = (window.NutriesCart && window.NutriesCart.get()) || [];
@@ -219,4 +218,5 @@ import StoreFooter from '../components/store/StoreFooter.astro';
       });
     }
   })();
-</script>
+  </script>
+</StoreLayout>

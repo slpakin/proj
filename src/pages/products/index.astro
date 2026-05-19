@@ -23,7 +23,7 @@ const categories = [
 ];
 ---
 
-<StoreLayout title="Shop All Products â€” Nutries">
+<StoreLayout title=”Shop All Products - Nutries”>
   <StoreNav />
   <CartDrawer />
 
@@ -35,7 +35,7 @@ const categories = [
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h1 class="font-display text-4xl sm:text-5xl font-bold text-white mb-3">Shop the Full Range</h1>
       <p class="text-white/60 text-lg max-w-xl mx-auto">
-        Every product in the Chef Preserve line â€” sealers, bags, and bundles â€” built to professional standards, priced for home kitchens.
+        Every product in the Chef Preserve line - sealers, bags, and bundles - built to professional standards, priced for home kitchens.
       </p>
     </div>
   </section>
@@ -93,10 +93,10 @@ const categories = [
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
         {[
-          { icon: 'ðŸšš', title: 'Free Shipping', sub: 'On all orders over $75' },
-          { icon: 'â†©ï¸', title: '30-Day Returns', sub: 'No questions, full refund' },
-          { icon: 'ðŸ”’', title: 'Secure Checkout', sub: 'Stripe Â· 256-bit SSL encrypted' },
-          { icon: 'ðŸ›¡ï¸', title: '2-Year Warranty', sub: 'Every sealer, worldwide' },
+          { icon: '', title: 'Free Shipping', sub: 'On all orders over $75' },
+          { icon: '', title: '30-Day Returns', sub: 'No questions, full refund' },
+          { icon: '', title: 'Secure Checkout', sub: 'Stripe - 256-bit SSL encrypted' },
+          { icon: '', title: '2-Year Warranty', sub: 'Every sealer, worldwide' },
         ].map(g => (
           <div class="flex flex-col items-center gap-1">
             <span class="text-2xl">{g.icon}</span>
@@ -109,43 +109,41 @@ const categories = [
   </div>
 
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const items      = document.querySelectorAll('.product-item');
-  const countEl    = document.getElementById('product-count');
+  <script is:inline>
+(function () {
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var items      = document.querySelectorAll('.product-item');
+  var countEl    = document.getElementById('product-count');
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const filter = (btn as HTMLElement).dataset.filter!;
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var filter = btn.dataset.filter || 'all';
 
-      // Update active state
-      filterBtns.forEach(b => {
+      filterBtns.forEach(function (b) {
         b.classList.remove('bg-nutries-indigo-600', 'text-white');
         b.classList.add('bg-nutries-grey-100', 'text-nutries-grey-600');
       });
       btn.classList.remove('bg-nutries-grey-100', 'text-nutries-grey-600');
       btn.classList.add('bg-nutries-indigo-600', 'text-white');
 
-      // Filter items
-      let visible = 0;
-      items.forEach(item => {
-        const el       = item as HTMLElement;
-        const category = el.dataset.category!;
-        const show     = filter === 'all' || category === filter;
-        el.style.display = show ? '' : 'none';
+      var visible = 0;
+      items.forEach(function (item) {
+        var category = item.dataset.category || '';
+        var show     = filter === 'all' || category === filter;
+        item.style.display = show ? '' : 'none';
         if (show) visible++;
       });
 
-      if (countEl) countEl.textContent = `${visible} product${visible !== 1 ? 's' : ''}`;
+      if (countEl) countEl.textContent = visible + ' product' + (visible !== 1 ? 's' : '');
     });
   });
 
-  // Handle hash-based category on load
-  const hash = window.location.hash.replace('#', '');
+  var hash = window.location.hash.replace('#', '');
   if (hash) {
-    const btn = document.querySelector(`[data-filter="${hash}"]`) as HTMLElement | null;
-    btn?.click();
+    var hashBtn = document.querySelector('[data-filter="' + hash + '"]');
+    if (hashBtn) hashBtn.click();
   }
-</script>
+})();
+  </script>
+</StoreLayout>

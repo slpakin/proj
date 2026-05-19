@@ -105,7 +105,13 @@ const discount = product.compare_price
 
         <!-- Stars -->
         <div class="flex items-center gap-2 mb-5">
-          <div class="flex gap-0.5 text-nutries-brown-400 text-lg">{'★★★★★'.split('').map(s => <span>{s}</span>)}</div>
+          <div class="flex gap-0.5">
+            {[1,2,3,4,5].map(() => (
+              <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            ))}
+          </div>
           <span class="text-nutries-grey-700 font-semibold text-sm">4.9</span>
           <span class="text-nutries-grey-400 text-sm">(127 reviews)</span>
           <a href="#reviews" class="text-nutries-indigo-600 text-sm hover:underline">See all reviews</a>
@@ -141,7 +147,7 @@ const discount = product.compare_price
         <!-- Quantity + Add to Cart -->
         <div class="flex gap-3 mb-6">
           <div class="flex items-center gap-0 rounded-xl border border-nutries-grey-200 overflow-hidden">
-            <button id="qty-dec" class="px-4 py-3 text-nutries-grey-600 hover:bg-nutries-grey-100 transition-colors text-lg font-bold">−</button>
+            <button id="qty-dec" class="px-4 py-3 text-nutries-grey-600 hover:bg-nutries-grey-100 transition-colors text-lg font-bold">-</button>
             <span id="qty-display" class="px-4 py-3 text-nutries-grey-900 font-bold text-base min-w-[3rem] text-center border-x border-nutries-grey-200">1</span>
             <button id="qty-inc" class="px-4 py-3 text-nutries-grey-600 hover:bg-nutries-grey-100 transition-colors text-lg font-bold">+</button>
           </div>
@@ -156,7 +162,7 @@ const discount = product.compare_price
             data-price={product.price}
             data-image={product.images?.[0] || '/images/product-placeholder.svg'}
           >
-            {product.stock > 0 ? '🛒 Add to Cart' : 'Out of Stock'}
+            {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
           </button>
         </div>
 
@@ -167,16 +173,16 @@ const discount = product.compare_price
             href="/checkout"
             class="block w-full text-center py-3 px-6 rounded-xl bg-btn-indigo text-white font-bold text-base shadow-md hover:shadow-glow-i transition-all duration-200 hover:-translate-y-0.5 mb-6"
           >
-            ⚡ Buy Now
+            Buy Now
           </a>
         )}
 
         <!-- Trust micro -->
         <div class="flex flex-wrap gap-4 py-4 border-t border-nutries-grey-100">
           {[
-            { icon: '🚚', label: 'Free shipping over $75' },
-            { icon: '↩️', label: '30-day free returns' },
-            { icon: '🔒', label: 'Secure Stripe checkout' },
+            { icon: '', label: 'Free shipping over $75' },
+            { icon: '', label: '30-day free returns' },
+            { icon: '', label: 'Secure Stripe checkout' },
           ].map(t => (
             <div class="flex items-center gap-1.5 text-nutries-grey-500 text-xs">
               <span>{t.icon}</span>{t.label}
@@ -216,7 +222,13 @@ const discount = product.compare_price
           { name:'Luca F. — Milan, Italy', rating:5, title:'Sous-vide ready, restaurant quality', body:"I sous-vide regularly and this handles wet marinades as well as dry goods. The moist-mode auto-detection is the detail that sets it apart from everything else I tried.", verified:true },
         ].map(r => (
           <div class="bg-nutries-grey-50 rounded-2xl p-5 border border-nutries-grey-100">
-            <div class="flex text-nutries-brown-400 text-sm mb-2">{'★★★★★'.split('').map(s => <span>{s}</span>)}</div>
+            <div class="flex gap-0.5 mb-2">
+              {[1,2,3,4,5].map(() => (
+                <svg class="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              ))}
+            </div>
             <h4 class="font-bold text-nutries-grey-900 text-sm mb-1">"{r.title}"</h4>
             <p class="text-nutries-grey-500 text-xs leading-relaxed">{r.body}</p>
             <div class="flex items-center gap-2 mt-4 pt-3 border-t border-nutries-grey-200">
@@ -258,50 +270,53 @@ const discount = product.compare_price
   </main>
 
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
-  let qty = 1;
-  const qtyDisplay = document.getElementById('qty-display');
+  <script is:inline>
+(function () {
+  var qty = 1;
+  var qtyDisplay = document.getElementById('qty-display');
 
-  document.getElementById('qty-dec')?.addEventListener('click', () => {
+  var decBtn = document.getElementById('qty-dec');
+  var incBtn = document.getElementById('qty-inc');
+  if (decBtn) decBtn.addEventListener('click', function () {
     if (qty > 1) { qty--; if (qtyDisplay) qtyDisplay.textContent = String(qty); }
   });
-  document.getElementById('qty-inc')?.addEventListener('click', () => {
+  if (incBtn) incBtn.addEventListener('click', function () {
     if (qty < 99) { qty++; if (qtyDisplay) qtyDisplay.textContent = String(qty); }
   });
 
-  const addBtn = document.getElementById('add-to-cart-btn') as HTMLButtonElement | null;
-  addBtn?.addEventListener('click', () => {
-    window.NutriesCart?.add({
-      id:    addBtn.dataset.id!,
-      slug:  addBtn.dataset.slug!,
-      name:  addBtn.dataset.name!,
-      price: parseFloat(addBtn.dataset.price!),
-      image: addBtn.dataset.image!,
-      qty,
+  var addBtn = document.getElementById('add-to-cart-btn');
+  if (addBtn) addBtn.addEventListener('click', function () {
+    window.NutriesCart && window.NutriesCart.add({
+      id:    addBtn.dataset.id,
+      slug:  addBtn.dataset.slug,
+      name:  addBtn.dataset.name,
+      price: parseFloat(addBtn.dataset.price),
+      image: addBtn.dataset.image,
+      qty:   qty,
     });
-    addBtn.textContent = '✓ Added to Cart!';
+    addBtn.textContent = 'Added to Cart!';
     addBtn.classList.add('bg-nutries-green-600');
-    setTimeout(() => {
-      addBtn.textContent = '🛒 Add to Cart';
+    setTimeout(function () {
+      addBtn.textContent = 'Add to Cart';
       addBtn.classList.remove('bg-nutries-green-600');
     }, 1800);
     document.dispatchEvent(new CustomEvent('cart:open'));
   });
 
-  // Buy now — add to cart then navigate
-  document.getElementById('buy-now-btn')?.addEventListener('click', (e) => {
+  var buyNowBtn = document.getElementById('buy-now-btn');
+  if (buyNowBtn) buyNowBtn.addEventListener('click', function (e) {
     e.preventDefault();
-    addBtn?.click();
-    setTimeout(() => window.location.href = '/checkout', 400);
+    if (addBtn) addBtn.click();
+    setTimeout(function () { window.location.href = '/checkout'; }, 400);
   });
 
-  // Thumbnail gallery
-  document.querySelectorAll('.thumb-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mainImg = document.getElementById('main-img') as HTMLImageElement | null;
-      if (mainImg) mainImg.src = (btn as HTMLElement).dataset.src!;
+  document.querySelectorAll('.thumb-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mainImg = document.getElementById('main-img');
+      if (mainImg) mainImg.src = btn.dataset.src;
     });
   });
-</script>
+})();
+  </script>
+</StoreLayout>

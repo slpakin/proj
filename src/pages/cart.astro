@@ -5,7 +5,7 @@ import CartDrawer  from '../components/store/CartDrawer.astro';
 import StoreFooter from '../components/store/StoreFooter.astro';
 ---
 
-<StoreLayout title="Your Cart â€” Nutries">
+<StoreLayout title="Your Cart - Nutries">
   <StoreNav />
   <CartDrawer />
 
@@ -13,7 +13,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
 
     <div class="flex items-center justify-between mb-8">
       <h1 class="font-display text-3xl sm:text-4xl font-bold text-nutries-grey-900">Your Cart</h1>
-      <a href="/products" class="text-nutries-indigo-600 text-sm font-medium hover:underline">â† Continue Shopping</a>
+      <a href="/products" class="text-nutries-indigo-600 text-sm font-medium hover:underline">Continue Shopping</a>
     </div>
 
     <!-- Empty state -->
@@ -27,7 +27,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
       <h2 class="text-xl font-bold text-nutries-grey-700 mb-2">Your cart is empty</h2>
       <p class="text-nutries-grey-400 text-sm mb-6">Looks like you haven't added anything yet.</p>
       <a href="/products" class="px-6 py-3 rounded-xl bg-btn-indigo text-white font-semibold text-sm hover:shadow-glow-i transition-all">
-        Start Shopping â†’
+        Start Shopping
       </a>
     </div>
 
@@ -92,7 +92,7 @@ import StoreFooter from '../components/store/StoreFooter.astro';
               href="/checkout"
               class="block w-full text-center py-4 rounded-2xl bg-btn-red text-white font-bold text-base hover:shadow-glow-r transition-all duration-200 hover:-translate-y-0.5"
             >
-              Proceed to Checkout â†’
+              Proceed to Checkout
             </a>
 
             <!-- Trust marks -->
@@ -110,97 +110,93 @@ import StoreFooter from '../components/store/StoreFooter.astro';
   </main>
 
   <StoreFooter />
-</StoreLayout>
 
-<script is:inline>
-  const FREE_SHIP = 75;
+  <script is:inline>
+(function () {
+  var FREE_SHIP = 75;
 
   function renderPageCart() {
-    const cart     = window.NutriesCart?.get() || [];
-    const total    = parseFloat(window.NutriesCart?.total() || '0');
-    const count    = window.NutriesCart?.count() || 0;
-    const isEmpty  = cart.length === 0;
+    var cart    = (window.NutriesCart && window.NutriesCart.get())   || [];
+    var total   = parseFloat((window.NutriesCart && window.NutriesCart.total()) || ‘0’);
+    var count   = (window.NutriesCart && window.NutriesCart.count()) || 0;
+    var isEmpty = cart.length === 0;
 
-    const emptyEl   = document.getElementById('cart-empty');
-    const contentEl = document.getElementById('cart-content');
+    var emptyEl   = document.getElementById(‘cart-empty’);
+    var contentEl = document.getElementById(‘cart-content’);
     if (isEmpty) {
-      emptyEl?.classList.remove('hidden');
-      emptyEl?.classList.add('flex');
-      contentEl?.classList.add('hidden');
+      if (emptyEl)   { emptyEl.classList.remove(‘hidden’); emptyEl.classList.add(‘flex’); }
+      if (contentEl)   contentEl.classList.add(‘hidden’);
       return;
     }
-    emptyEl?.classList.add('hidden');
-    emptyEl?.classList.remove('flex');
-    contentEl?.classList.remove('hidden');
+    if (emptyEl)   { emptyEl.classList.add(‘hidden’); emptyEl.classList.remove(‘flex’); }
+    if (contentEl)   contentEl.classList.remove(‘hidden’);
 
-    // Summary numbers
-    const subtotalEl = document.getElementById('page-subtotal');
-    const countEl    = document.getElementById('page-count');
-    const totalEl    = document.getElementById('page-total');
-    const shipEl     = document.getElementById('page-shipping');
-    const shipMsgEl  = document.getElementById('page-ship-msg');
-    const shipBarEl  = document.getElementById('page-ship-bar');
+    var subtotalEl = document.getElementById(‘page-subtotal’);
+    var countEl    = document.getElementById(‘page-count’);
+    var totalEl    = document.getElementById(‘page-total’);
+    var shipEl     = document.getElementById(‘page-shipping’);
+    var shipMsgEl  = document.getElementById(‘page-ship-msg’);
+    var shipBarEl  = document.getElementById(‘page-ship-bar’);
 
-    if (subtotalEl) subtotalEl.textContent = `$${total.toFixed(2)}`;
+    if (subtotalEl) subtotalEl.textContent = ‘$’ + total.toFixed(2);
     if (countEl)    countEl.textContent    = String(count);
 
-    const shipping = total >= FREE_SHIP ? 0 : 7.99;
-    if (shipEl)   shipEl.textContent = shipping === 0 ? 'ðŸŽ‰ FREE' : `$${shipping.toFixed(2)}`;
-    if (totalEl)  totalEl.textContent = `$${(total + shipping).toFixed(2)}`;
+    var shipping = total >= FREE_SHIP ? 0 : 7.99;
+    if (shipEl)  shipEl.textContent  = shipping === 0 ? ‘FREE’ : ‘$’ + shipping.toFixed(2);
+    if (totalEl) totalEl.textContent = ‘$’ + (total + shipping).toFixed(2);
 
-    const pct = Math.min((total / FREE_SHIP) * 100, 100);
-    if (shipBarEl) shipBarEl.style.width = `${pct}%`;
+    var pct = Math.min((total / FREE_SHIP) * 100, 100);
+    if (shipBarEl) shipBarEl.style.width = pct + ‘%’;
     if (shipMsgEl) {
-      const diff = Math.max(FREE_SHIP - total, 0);
+      var diff = Math.max(FREE_SHIP - total, 0);
       shipMsgEl.innerHTML = diff <= 0
-        ? 'ðŸŽ‰ <strong>Free shipping unlocked!</strong>'
-        : `Add <strong>$${diff.toFixed(2)}</strong> for free shipping`;
+        ? ‘<strong>Free shipping unlocked!</strong>’
+        : ‘Add <strong>$’ + diff.toFixed(2) + ‘</strong> more for free shipping’;
     }
 
-    // Render items
-    const itemsContainer = document.getElementById('page-cart-items');
+    var itemsContainer = document.getElementById(‘page-cart-items’);
     if (!itemsContainer) return;
-    itemsContainer.innerHTML = '';
+    itemsContainer.innerHTML = ‘’;
 
-    cart.forEach((item: any) => {
-      const div = document.createElement('div');
-      div.className = 'flex gap-4 bg-white rounded-2xl border border-nutries-grey-100 shadow-sm p-4 hover:shadow-md transition-shadow';
-      div.innerHTML = `
-        <a href="/products/${item.slug}" class="w-24 h-24 rounded-xl overflow-hidden bg-gradient-to-br from-nutries-grey-50 to-nutries-indigo-50 flex-shrink-0">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-contain p-2"/>
-        </a>
-        <div class="flex-1 min-w-0">
-          <a href="/products/${item.slug}" class="font-semibold text-nutries-grey-900 text-sm hover:text-nutries-indigo-700 transition-colors line-clamp-2">${item.name}</a>
-          <p class="text-nutries-indigo-600 font-bold text-sm mt-1">$${item.price.toFixed(2)} each</p>
-          <div class="flex items-center gap-2 mt-3">
-            <button data-action="dec" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors font-bold text-lg">âˆ’</button>
-            <span class="w-8 text-center font-bold text-nutries-grey-900">${item.qty}</span>
-            <button data-action="inc" data-id="${item.id}" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors font-bold text-lg">+</button>
-            <span class="ml-auto text-base font-bold text-nutries-grey-900">$${(item.price * item.qty).toFixed(2)}</span>
-            <button data-action="remove" data-id="${item.id}" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors ml-2" aria-label="Remove">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-        </div>`;
+    cart.forEach(function (item) {
+      var div = document.createElement(‘div’);
+      div.className = ‘flex gap-4 bg-white rounded-2xl border border-nutries-grey-100 shadow-sm p-4 hover:shadow-md transition-shadow’;
+      div.innerHTML =
+        ‘<a href="/products/’ + item.slug + ‘" class="w-24 h-24 rounded-xl overflow-hidden bg-gradient-to-br from-nutries-grey-50 to-nutries-indigo-50 flex-shrink-0">’ +
+          ‘<img src="’ + item.image + ‘" alt="’ + item.name + ‘" class="w-full h-full object-contain p-2"/>’ +
+        ‘</a>’ +
+        ‘<div class="flex-1 min-w-0">’ +
+          ‘<a href="/products/’ + item.slug + ‘" class="font-semibold text-nutries-grey-900 text-sm hover:text-nutries-indigo-700 transition-colors line-clamp-2">’ + item.name + ‘</a>’ +
+          ‘<p class="text-nutries-indigo-600 font-bold text-sm mt-1">$’ + item.price.toFixed(2) + ‘ each</p>’ +
+          ‘<div class="flex items-center gap-2 mt-3">’ +
+            ‘<button data-action="dec" data-id="’ + item.id + ‘" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-red-50 hover:border-nutries-red-200 hover:text-nutries-red-600 transition-colors font-bold text-lg">-</button>’ +
+            ‘<span class="w-8 text-center font-bold text-nutries-grey-900">’ + item.qty + ‘</span>’ +
+            ‘<button data-action="inc" data-id="’ + item.id + ‘" class="w-8 h-8 rounded-full border border-nutries-grey-200 flex items-center justify-center text-nutries-grey-600 hover:bg-nutries-green-50 hover:border-nutries-green-200 hover:text-nutries-green-700 transition-colors font-bold text-lg">+</button>’ +
+            ‘<span class="ml-auto text-base font-bold text-nutries-grey-900">$’ + (item.price * item.qty).toFixed(2) + ‘</span>’ +
+            ‘<button data-action="remove" data-id="’ + item.id + ‘" class="p-1 text-nutries-grey-300 hover:text-nutries-red-500 transition-colors ml-2" aria-label="Remove">’ +
+              ‘<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>’ +
+            ‘</button>’ +
+          ‘</div>’ +
+        ‘</div>’;
       itemsContainer.appendChild(div);
     });
 
-    // Delegation
-    itemsContainer.querySelectorAll('[data-action]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const el     = btn as HTMLElement;
-        const action = el.dataset.action!;
-        const id     = el.dataset.id!;
-        const cart2  = window.NutriesCart?.get() || [];
-        const itm    = cart2.find((i: any) => i.id === id);
-        if (action === 'inc')    window.NutriesCart?.updateQty(id, (itm?.qty || 0) + 1);
-        if (action === 'dec')    window.NutriesCart?.updateQty(id, (itm?.qty || 1) - 1);
-        if (action === 'remove') window.NutriesCart?.remove(id);
+    itemsContainer.querySelectorAll(‘[data-action]’).forEach(function (btn) {
+      btn.addEventListener(‘click’, function () {
+        var action = btn.dataset.action || ‘’;
+        var id     = btn.dataset.id    || ‘’;
+        var cart2  = (window.NutriesCart && window.NutriesCart.get()) || [];
+        var itm    = cart2.find(function (i) { return i.id === id; });
+        if (action === ‘inc’)    window.NutriesCart && window.NutriesCart.updateQty(id, (itm ? itm.qty : 0) + 1);
+        if (action === ‘dec’)    window.NutriesCart && window.NutriesCart.updateQty(id, (itm ? itm.qty : 1) - 1);
+        if (action === ‘remove’) window.NutriesCart && window.NutriesCart.remove(id);
         renderPageCart();
       });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', renderPageCart);
-  document.addEventListener('cart:updated', renderPageCart);
-</script>
+  document.addEventListener(‘DOMContentLoaded’, renderPageCart);
+  document.addEventListener(‘cart:updated’, renderPageCart);
+})();
+  </script>
+</StoreLayout>
